@@ -84,6 +84,9 @@ demo/*.mkv
 
 # ── Docker volumes / local data ───────────────────────────────────────────────
 data/
+# Allow AssetSentinel training data
+!src/backend/app/data/
+!src/backend/app/data/*.csv
 logs/
 *.log
 
