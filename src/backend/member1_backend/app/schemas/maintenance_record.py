@@ -10,6 +10,7 @@ class MaintenanceRecordBase(BaseModel):
     maintenance_date: str        # ISO date string
     technician_action: str
     status: str                  # COMPLETED | OVERDUE | SCHEDULED
+    hours_since_service: float
     notes: Optional[str] = None
 
 

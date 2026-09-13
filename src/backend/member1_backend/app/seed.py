@@ -61,9 +61,6 @@ COMPONENTS = [
     # AS-1047
     {"component_id": "BRG-1047", "asset_id": "AS-1047", "component_type": "bearing",       "criticality": "HIGH",   "installation_date": "2022-06-15", "operating_hours": 2450.0, "life_limit": 3000.0},
     {"component_id": "ENG-1047", "asset_id": "AS-1047", "component_type": "engine",        "criticality": "HIGH",   "installation_date": "2021-01-10", "operating_hours": 2450.0, "life_limit": 5000.0},
-    {"component_id": "SEN-1047", "asset_id": "AS-1047", "component_type": "sensors",       "criticality": "MEDIUM", "installation_date": "2023-03-01", "operating_hours": 2450.0, "life_limit": 4000.0},
-    {"component_id": "AVI-1047", "asset_id": "AS-1047", "component_type": "avionics",      "criticality": "HIGH",   "installation_date": "2022-01-01", "operating_hours": 2450.0, "life_limit": 6000.0},
-    {"component_id": "COM-1047", "asset_id": "AS-1047", "component_type": "communications","criticality": "MEDIUM", "installation_date": "2022-01-01", "operating_hours": 2450.0, "life_limit": 5000.0},
     # AS-1002
     {"component_id": "BRG-1002", "asset_id": "AS-1002", "component_type": "bearing",       "criticality": "HIGH",   "installation_date": "2023-01-20", "operating_hours": 1200.0, "life_limit": 3000.0},
     {"component_id": "ENG-1002", "asset_id": "AS-1002", "component_type": "engine",        "criticality": "HIGH",   "installation_date": "2023-01-20", "operating_hours": 1200.0, "life_limit": 5000.0},
@@ -93,6 +90,7 @@ MAINTENANCE_RECORDS = [
         "maintenance_date": "2024-02-10",
         "technician_action": "Routine bearing inspection — passed",
         "status": "OVERDUE",
+        "hours_since_service": 420.0,
         "notes": "Last service 420h ago. Next inspection overdue.",
     },
     {
@@ -103,6 +101,7 @@ MAINTENANCE_RECORDS = [
         "maintenance_date": "2024-04-20",
         "technician_action": "Engine oil change and filter replacement",
         "status": "COMPLETED",
+        "hours_since_service": 250.0,
         "notes": None,
     },
     {
@@ -113,6 +112,18 @@ MAINTENANCE_RECORDS = [
         "maintenance_date": "2024-04-28",
         "technician_action": "Bearing inspection — passed, no issues found",
         "status": "COMPLETED",
+        "hours_since_service": 120.0,
+        "notes": None,
+    },
+    {
+        "maintenance_id": "MNT-1002-002",
+        "asset_id": "AS-1002",
+        "component_id": "ENG-1002",
+        "maintenance_type": "service",
+        "maintenance_date": "2024-04-25",
+        "technician_action": "Engine routine maintenance",
+        "status": "COMPLETED",
+        "hours_since_service": 100.0,
         "notes": None,
     },
 ]

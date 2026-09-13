@@ -97,3 +97,9 @@ logs/
 .terraform/
 *.tfstate
 *.tfstate.backup
+
+# -- Hackathon Exclusions --
+*.db
+*.sqlite
+*.sqlite3
+e2e_verify.py

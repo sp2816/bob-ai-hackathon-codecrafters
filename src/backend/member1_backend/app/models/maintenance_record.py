@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text
+from sqlalchemy import Column, String, Text, Float
 from app.database import Base
 
 
@@ -12,4 +12,5 @@ class MaintenanceRecord(Base):
     maintenance_date = Column(String, nullable=False)   # ISO date string
     technician_action = Column(String, nullable=False)
     status = Column(String, nullable=False)             # COMPLETED | OVERDUE | SCHEDULED
+    hours_since_service = Column(Float, nullable=False)
     notes = Column(Text, nullable=True)
