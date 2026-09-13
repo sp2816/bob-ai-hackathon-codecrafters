@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel
 
 
@@ -9,7 +9,7 @@ class ReadinessResultBase(BaseModel):
     readiness_score: float
     readiness_status: str                           # READY | CONDITIONALLY_READY | NOT_READY
     reasons: Optional[List[str]] = None
-    evidence: Optional[Dict[str, Any]] = None
+    evidence: Optional[Union[List[Dict[str, Any]], Dict[str, Any]]] = None
     timestamp: str                                  # ISO datetime string
 
 
