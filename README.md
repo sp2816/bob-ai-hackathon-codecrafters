@@ -8,10 +8,10 @@
 
 | Field | Value |
 |---|---|
-| **Team Name** | [Your Team Name] |
-| **Track** | [AI / DevOps / Sustainability / Open] |
-| **Team Lead** | [Name] — [email@ibm.com] |
-| **Members** | [Name 1], [Name 2], [Name 3] |
+| **Team Name** | Codecrafters |
+| **Track** | AI |
+| **Team Lead** | Tisha Soni — 24dce138@charusat.edu.in |
+| **Members** | Selin Sandipkumar Parmar, Mukt Kalpeshbhai Patel, Dhruv M. Sutariya |
 
 ---
 
