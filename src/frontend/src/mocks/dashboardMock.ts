@@ -69,7 +69,7 @@ export const demoAnomaly: AnomalyResult = {
   asset_id: "AS-1047",
   component_id: "COMP-BRG-01",
   anomaly_score: 0.91,
-  anomaly_status: "ANOMALY",
+  anomaly_status: "HIGH",
   anomaly_severity: "HIGH",
   sensor: "Vibration",
   timestamp: "2026-09-13T09:25:00Z",
