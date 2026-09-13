@@ -1,0 +1,14 @@
+# Member 2 ML module dependencies
+# src/backend/member2_ml/requirements.txt
+#
+# Install:
+#   pip install -r src/backend/member2_ml/requirements.txt
+#
+# These packages are also required by Member 1's shared backend.
+# Coordinate with Member 1 (Dhruv) to ensure they are included
+# in src/backend/member1_backend/requirements.txt as well.
+
+numpy>=1.26.0
+pandas>=2.1.0
+scikit-learn>=1.4.0
+joblib>=1.3.0

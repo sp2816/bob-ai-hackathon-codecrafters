@@ -1,0 +1,43 @@
+maintenance_id,asset_id,component_id,maintenance_type,maintenance_date,technician_action,status,notes
+MNT-0001,AS-1047,BRG-1047,INSPECTION,2025-01-21,Routine inspection of main_bearing. Serviceable. No corrective action required.,COMPLETED,Completed at 2030 operational hours.
+MNT-0002,AS-1047,BRG-1047,INSPECTION,2026-09-27,Inspection OVERDUE by 120 h. 420h since last service (interval: 300h). Immediate action required.,OVERDUE,Record created at 2450 operational hours.
+MNT-0003,AS-1047,ENG-1047,INSPECTION,2024-11-22,Routine inspection of engine. Serviceable. No corrective action required.,COMPLETED,Completed at 2200 operational hours.
+MNT-0004,AS-1047,ENG-1047,INSPECTION,2026-09-27,Scheduled inspection in approximately 250 h. No immediate action required.,SCHEDULED,Record created at 2450 operational hours.
+MNT-0005,AS-1047,HYD-1047,INSPECTION,2024-11-22,Routine inspection of hydraulics. Serviceable. No corrective action required.,COMPLETED,Completed at 2200 operational hours.
+MNT-0006,AS-1047,HYD-1047,INSPECTION,2026-09-27,Scheduled inspection in approximately 150 h. No immediate action required.,SCHEDULED,Record created at 2450 operational hours.
+MNT-0007,AS-1001,BRG-1001,INSPECTION,2026-01-16,Routine inspection of main_bearing. Serviceable. No corrective action required.,COMPLETED,Completed at 860 operational hours.
+MNT-0008,AS-1001,BRG-1001,INSPECTION,2026-09-27,Scheduled inspection in approximately 180 h. No immediate action required.,SCHEDULED,Record created at 980 operational hours.
+MNT-0009,AS-1001,ENG-1001,INSPECTION,2026-02-15,Routine inspection of engine. Serviceable. No corrective action required.,COMPLETED,Completed at 780 operational hours.
+MNT-0010,AS-1001,ENG-1001,INSPECTION,2026-09-27,Scheduled inspection in approximately 300 h. No immediate action required.,SCHEDULED,Record created at 980 operational hours.
+MNT-0011,AS-1002,ENG-1002,INSPECTION,2025-10-18,Routine inspection of engine. Serviceable. No corrective action required.,COMPLETED,Completed at 1120 operational hours.
+MNT-0012,AS-1002,ENG-1002,INSPECTION,2026-09-27,Scheduled inspection in approximately 420 h. No immediate action required.,SCHEDULED,Record created at 1200 operational hours.
+MNT-0013,AS-1002,HYD-1002,INSPECTION,2025-11-17,Routine inspection of hydraulics. Serviceable. No corrective action required.,COMPLETED,Completed at 1050 operational hours.
+MNT-0014,AS-1002,HYD-1002,INSPECTION,2026-09-27,Scheduled inspection in approximately 250 h. No immediate action required.,SCHEDULED,Record created at 1200 operational hours.
+MNT-0015,AS-1003,BRG-1003,INSPECTION,2026-05-16,Routine inspection of main_bearing. Serviceable. No corrective action required.,COMPLETED,Completed at 450 operational hours.
+MNT-0016,AS-1003,BRG-1003,INSPECTION,2026-09-27,Scheduled inspection in approximately 90 h. No immediate action required.,SCHEDULED,Record created at 660 operational hours.
+MNT-0017,AS-1003,AVN-1003,INSPECTION,2026-04-16,Routine inspection of avionics. Serviceable. No corrective action required.,COMPLETED,Completed at 560 operational hours.
+MNT-0018,AS-1003,AVN-1003,INSPECTION,2026-09-27,Scheduled inspection in approximately 250 h. No immediate action required.,SCHEDULED,Record created at 660 operational hours.
+MNT-0019,AS-1004,ENG-1004,INSPECTION,2026-06-15,Routine inspection of engine. Serviceable. No corrective action required.,COMPLETED,Completed at 390 operational hours.
+MNT-0020,AS-1004,ENG-1004,INSPECTION,2026-09-27,Scheduled inspection in approximately 440 h. No immediate action required.,SCHEDULED,Record created at 450 operational hours.
+MNT-0021,AS-1004,COM-1004,INSPECTION,2026-06-15,Routine inspection of communications. Serviceable. No corrective action required.,COMPLETED,Completed at 360 operational hours.
+MNT-0022,AS-1004,COM-1004,INSPECTION,2026-09-27,Scheduled inspection in approximately 510 h. No immediate action required.,SCHEDULED,Record created at 450 operational hours.
+MNT-0023,AS-1005,BRG-1005,INSPECTION,2025-06-20,Routine inspection of main_bearing. Serviceable. No corrective action required.,COMPLETED,Completed at 1570 operational hours.
+MNT-0024,AS-1005,BRG-1005,INSPECTION,2026-09-27,Scheduled inspection in approximately 120 h. No immediate action required.,SCHEDULED,Record created at 1750 operational hours.
+MNT-0025,AS-1005,SEN-1005,INSPECTION,2025-06-20,Routine inspection of sensors. Serviceable. No corrective action required.,COMPLETED,Completed at 1530 operational hours.
+MNT-0026,AS-1005,SEN-1005,INSPECTION,2026-09-27,Scheduled inspection in approximately 130 h. No immediate action required.,SCHEDULED,Record created at 1750 operational hours.
+MNT-0027,AS-1006,ENG-1006,INSPECTION,2026-07-15,Routine inspection of engine. Serviceable. No corrective action required.,COMPLETED,Completed at 280 operational hours.
+MNT-0028,AS-1006,ENG-1006,INSPECTION,2026-09-27,Scheduled inspection in approximately 460 h. No immediate action required.,SCHEDULED,Record created at 320 operational hours.
+MNT-0029,AS-1006,HYD-1006,INSPECTION,2026-07-15,Routine inspection of hydraulics. Serviceable. No corrective action required.,COMPLETED,Completed at 250 operational hours.
+MNT-0030,AS-1006,HYD-1006,INSPECTION,2026-09-27,Scheduled inspection in approximately 330 h. No immediate action required.,SCHEDULED,Record created at 320 operational hours.
+MNT-0031,AS-1007,ENG-1007,INSPECTION,2026-02-15,Routine inspection of engine. Serviceable. No corrective action required.,COMPLETED,Completed at 760 operational hours.
+MNT-0032,AS-1007,ENG-1007,INSPECTION,2026-09-27,Scheduled inspection in approximately 370 h. No immediate action required.,SCHEDULED,Record created at 890 operational hours.
+MNT-0033,AS-1007,COM-1007,INSPECTION,2026-03-17,Routine inspection of communications. Serviceable. No corrective action required.,COMPLETED,Completed at 690 operational hours.
+MNT-0034,AS-1007,COM-1007,INSPECTION,2026-09-27,Scheduled inspection in approximately 400 h. No immediate action required.,SCHEDULED,Record created at 890 operational hours.
+MNT-0035,AS-1008,BRG-1008,INSPECTION,2025-09-18,Routine inspection of main_bearing. Serviceable. No corrective action required.,COMPLETED,Completed at 1250 operational hours.
+MNT-0036,AS-1008,BRG-1008,INSPECTION,2026-09-27,Scheduled inspection in approximately 210 h. No immediate action required.,SCHEDULED,Record created at 1340 operational hours.
+MNT-0037,AS-1008,AVN-1008,INSPECTION,2025-10-18,Routine inspection of avionics. Serviceable. No corrective action required.,COMPLETED,Completed at 1180 operational hours.
+MNT-0038,AS-1008,AVN-1008,INSPECTION,2026-09-27,Scheduled inspection in approximately 190 h. No immediate action required.,SCHEDULED,Record created at 1340 operational hours.
+MNT-0039,AS-1009,ENG-1009,INSPECTION,2026-06-15,Routine inspection of engine. Serviceable. No corrective action required.,COMPLETED,Completed at 320 operational hours.
+MNT-0040,AS-1009,ENG-1009,INSPECTION,2026-09-27,Scheduled inspection in approximately 250 h. No immediate action required.,SCHEDULED,Record created at 570 operational hours.
+MNT-0041,AS-1009,SEN-1009,INSPECTION,2026-04-16,Routine inspection of sensors. Serviceable. No corrective action required.,COMPLETED,Completed at 540 operational hours.
+MNT-0042,AS-1009,SEN-1009,INSPECTION,2026-09-27,Scheduled inspection in approximately 320 h. No immediate action required.,SCHEDULED,Record created at 570 operational hours.

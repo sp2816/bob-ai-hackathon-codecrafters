@@ -1,0 +1,11 @@
+asset_id,asset_name,asset_type,unit,operational_hours,current_status
+AS-1047,Rotary Wing Asset 1047,aircraft,Unit-Alpha,2450.0,UNKNOWN
+AS-1001,Fixed Wing Asset 1001,aircraft,Unit-Alpha,980.0,UNKNOWN
+AS-1002,Ground Vehicle 1002,ground_vehicle,Unit-Bravo,1200.0,UNKNOWN
+AS-1003,Rotary Wing Asset 1003,aircraft,Unit-Bravo,660.0,UNKNOWN
+AS-1004,Ground Vehicle 1004,ground_vehicle,Unit-Charlie,450.0,UNKNOWN
+AS-1005,Fixed Wing Asset 1005,aircraft,Unit-Charlie,1750.0,UNKNOWN
+AS-1006,Rotary Wing Asset 1006,aircraft,Unit-Delta,320.0,UNKNOWN
+AS-1007,Ground Vehicle 1007,ground_vehicle,Unit-Delta,890.0,UNKNOWN
+AS-1008,Fixed Wing Asset 1008,aircraft,Unit-Echo,1340.0,UNKNOWN
+AS-1009,Ground Vehicle 1009,ground_vehicle,Unit-Echo,570.0,UNKNOWN
