@@ -1,4 +1,4 @@
-# 🚀 [Your Project Title Here]
+# 🚀 AssetSentinel — Mission Readiness & Predictive Maintenance Copilot
 
 > ⚠️ **Replace everything in `[ ]` brackets with your actual content before submission.**
 
