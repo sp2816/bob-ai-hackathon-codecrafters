@@ -394,7 +394,7 @@ class TestFleetRanking:
             maintenance_date=datetime(2026, 1, 16, tzinfo=timezone.utc),
             status="COMPLETED", hours_since_service=120.0,
         )
-        from services.prediction_service import ComponentPredictionResult  # noqa: E402
+        from member2_ml.services.prediction_service import ComponentPredictionResult  # noqa: E402
         from .conftest import FIXED_TIMESTAMP
         healthy_pred = ComponentPredictionResult(
             prediction_id="PRED-BRG1001",
