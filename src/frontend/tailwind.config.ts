@@ -1,1 +1,9 @@
-// Member 4 — placeholder; to be implemented during Phase 9
+import type { Config } from "tailwindcss";
+
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+} satisfies Config;

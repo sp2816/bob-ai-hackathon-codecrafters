@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+# 🚀 AssetSentinel — Mission Readiness & Predictive Maintenance Copilot
+=======
 # 🚀 AssetSentinel
+>>>>>>> origin/main
 
 > ⚠️ **Replace everything in `[ ]` brackets with your actual content before submission.**
 

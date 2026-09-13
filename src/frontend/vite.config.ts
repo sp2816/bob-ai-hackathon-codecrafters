@@ -1,1 +1,6 @@
-// Member 4 — placeholder; to be implemented during Phase 9
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+});

@@ -23,7 +23,11 @@ team:
       email: "24dcs128@charusat.edu.in"
 
 submission:
+<<<<<<< HEAD
+  title: "AssetSentinel — Mission Readiness & Predictive Maintenance Copilot"                            # REQUIRED — Project display name, e.g., "SmartOps Dashboard"
+=======
   title: "AssetSentinel"                            # REQUIRED — Project display name, e.g., "SmartOps Dashboard"
+>>>>>>> origin/main
 
   problem_statement: >                 # REQUIRED — 1-3 sentences. What problem? Who has it?
     Military organisations struggle to accurately determine whether aircraft,
