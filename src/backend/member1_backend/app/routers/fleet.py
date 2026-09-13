@@ -41,3 +41,17 @@ def trigger_ml_pipeline(db: Session = Depends(get_db)):
         return {"status": "ok", "stored": summary}
     except RuntimeError as e:
         raise HTTPException(status_code=503, detail=str(e))
+
+@router.post("/run-readiness", tags=["fleet"])
+def trigger_readiness_pipeline(db: Session = Depends(get_db)):
+    """
+    Trigger Member 3's Readiness and Maintenance Priority pipeline.
+    """
+    try:
+        from app.services.readiness_integration import run_readiness_pipeline
+        summary = run_readiness_pipeline(db)
+        return {"status": "ok", "generated": summary}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

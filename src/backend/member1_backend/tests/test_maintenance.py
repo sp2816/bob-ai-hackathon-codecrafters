@@ -2,12 +2,17 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app.main import app
 from app.database import Base, get_db
+from app.models.maintenance_record import MaintenanceRecord
+from app.models.maintenance_recommendation import MaintenanceRecommendation
+from app.models.asset import Asset
+from app.models.component import Component
 
-TEST_DATABASE_URL = "sqlite:///./test.db"
-test_engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+TEST_DATABASE_URL = "sqlite:///:memory:"
+test_engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False}, poolclass=StaticPool)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 
 
@@ -19,7 +24,12 @@ def override_get_db():
         db.close()
 
 
-app.dependency_overrides[get_db] = override_get_db
+@pytest.fixture(autouse=True)
+def override_db_dependency():
+    app.dependency_overrides[get_db] = override_get_db
+    yield
+    app.dependency_overrides.clear()
+
 
 Base.metadata.create_all(bind=test_engine)
 
@@ -39,6 +49,7 @@ def seed_test_data():
             maintenance_date="2024-02-10",
             technician_action="Routine bearing inspection — passed",
             status="OVERDUE",
+            hours_since_service=420.0,
             notes="Last service 420h ago. Next inspection overdue.",
         ))
         db.commit()
@@ -66,5 +77,5 @@ def test_maintenance_field_names():
     response = client.get("/maintenance/AS-1047")
     record = response.json()[0]
     for field in ["maintenance_id", "asset_id", "component_id", "maintenance_type",
-                  "maintenance_date", "technician_action", "status"]:
+                  "maintenance_date", "technician_action", "status", "hours_since_service"]:
         assert field in record, f"Missing field: {field}"
