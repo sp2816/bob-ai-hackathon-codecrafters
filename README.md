@@ -1,8 +1,7 @@
+
+# 🚀 AssetSentinel — Mission Readiness & Predictive Maintenance Copilot
+
 # 🚀 AssetSentinel
-
-> ⚠️ **Replace everything in `[ ]` brackets with your actual content before submission.**
-
----
 
 ## 👥 Team
 
@@ -17,7 +16,7 @@
 
 ## 🎯 Problem Statement
 
-> In 2–3 sentences: What problem does your project solve? Who experiences this problem?
+What problem does your project solve? Who experiences this problem?
 
 Military organisations cannot always accurately determine whether aircraft,
 vehicles, and critical equipment are mission-ready. Valuable HUMS sensor data
@@ -28,7 +27,7 @@ reactive and failures to occur unexpectedly, reducing operational readiness.
 
 ## 💡 Solution
 
-> In 2–3 sentences: What did you build? How does it solve the problem above?
+What did you build? How does it solve the problem above?
 
 AssetSentinel analyses sensor data, asset usage patterns, and service
 records to generate a dynamic mission-readiness score and identify assets that
