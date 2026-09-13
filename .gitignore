@@ -103,3 +103,5 @@ logs/
 *.sqlite
 *.sqlite3
 e2e_verify.py
+
+.env.example
