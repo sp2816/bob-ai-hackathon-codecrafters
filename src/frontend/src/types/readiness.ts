@@ -5,7 +5,7 @@ export type ReadinessStatus =
 
 export interface ReadinessResponse {
   asset_id: string;
-  mission_id: string;
+  mission_id: string | null;
   readiness_score: number;
   readiness_status: ReadinessStatus;
   reasons: string[];
