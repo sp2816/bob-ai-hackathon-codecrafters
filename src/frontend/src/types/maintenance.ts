@@ -13,7 +13,7 @@ export type MaintenanceUrgency =
 export type MaintenanceStatus =
   | "OPEN"
   | "IN_PROGRESS"
-  | "COMPLETED";
+  | "RESOLVED";
 
 export interface MaintenanceRecommendation {
   recommendation_id: string;
