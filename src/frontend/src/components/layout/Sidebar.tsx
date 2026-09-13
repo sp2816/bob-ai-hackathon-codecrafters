@@ -11,32 +11,44 @@ import {
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  currentPage: string;
+  onNavigate: (page: string) => void;
 }
 
 const navigation = [
   {
     label: "Dashboard",
     icon: LayoutDashboard,
+    page: "dashboard",
   },
   {
     label: "Assets",
     icon: Package,
+    page: "assets",
   },
   {
     label: "Predictions",
     icon: Activity,
+    page: "predictions",
   },
   {
     label: "Maintenance",
     icon: Wrench,
+    page: "maintenance",
   },
   {
     label: "IBM Bob",
     icon: Bot,
+    page: "ibm-bob",
   },
 ];
 
-function Sidebar({ collapsed, onToggle }: SidebarProps) {
+function Sidebar({
+  collapsed,
+  onToggle,
+  currentPage,
+  onNavigate,
+}: SidebarProps) {
   return (
     <aside
       className={`flex h-screen shrink-0 flex-col border-r border-[#DED2C0] bg-[#E9DDCB] transition-all duration-200 ${
@@ -77,15 +89,16 @@ function Sidebar({ collapsed, onToggle }: SidebarProps) {
         )}
 
         <div className="space-y-2">
-          {navigation.map((item, index) => {
+          {navigation.map((item) => {
             const Icon = item.icon;
-            const active = index === 0;
+            const active = currentPage === item.page;
 
             return (
               <button
-                key={item.label}
+                key={item.page}
                 type="button"
                 title={collapsed ? item.label : undefined}
+                onClick={() => onNavigate(item.page)}
                 className={`
                   group flex w-full items-center rounded-full
                   px-4 py-3
@@ -149,20 +162,14 @@ function Sidebar({ collapsed, onToggle }: SidebarProps) {
         <button
           type="button"
           onClick={onToggle}
-          className="editorial-button mt-6 flex w-full items-center justify-center gap-2 border-t border-[#DED2C0] pt-4 text-[#8B7968] hover:text-[#3B2A20]"
+          className="mt-6 flex w-full items-center justify-center gap-2 border-t border-[#DED2C0] pt-4 text-[#8B7968] transition-colors hover:text-[#3B2A20]"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
-            <ChevronRight
-              className="h-4 w-4"
-              strokeWidth={1.6}
-            />
+            <ChevronRight className="h-4 w-4" strokeWidth={1.6} />
           ) : (
             <>
-              <ChevronLeft
-                className="h-4 w-4"
-                strokeWidth={1.6}
-              />
+              <ChevronLeft className="h-4 w-4" strokeWidth={1.6} />
 
               <span className="text-[9px] font-semibold uppercase tracking-[0.12em]">
                 Collapse
