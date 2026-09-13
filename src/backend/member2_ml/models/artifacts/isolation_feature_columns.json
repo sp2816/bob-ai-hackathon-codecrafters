@@ -1,0 +1,28 @@
+{
+  "feature_columns": [
+    "vibration__latest_value",
+    "vibration__rolling_mean",
+    "vibration__rolling_std",
+    "vibration__value_max",
+    "vibration__trend_slope",
+    "vibration__max_z_score",
+    "temperature__latest_value",
+    "temperature__rolling_mean",
+    "temperature__rolling_std",
+    "temperature__value_max",
+    "temperature__trend_slope",
+    "temperature__max_z_score",
+    "pressure__latest_value",
+    "pressure__rolling_mean",
+    "pressure__rolling_std",
+    "pressure__value_max",
+    "pressure__trend_slope",
+    "pressure__max_z_score",
+    "RPM__latest_value",
+    "RPM__rolling_mean",
+    "RPM__rolling_std",
+    "RPM__value_max",
+    "RPM__trend_slope",
+    "RPM__max_z_score"
+  ]
+}
