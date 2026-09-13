@@ -87,7 +87,7 @@ export const missionReadiness: ReadinessResponse[] = [
   {
     asset_id: "AS-1047",
     mission_id: "MSN-001",
-    readiness_score: 94,
+    readiness_score: 0.94,
     readiness_status: "CONDITIONALLY_READY",
     reasons: [
       "High vibration anomaly detected",
