@@ -5,7 +5,7 @@ export type RiskCategory =
 
 export type AnomalyStatus =
   | "NORMAL"
-  | "ANOMALY";
+  | "HIGH";
 
 export type AnomalySeverity =
   | "LOW"
