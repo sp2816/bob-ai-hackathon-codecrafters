@@ -1,19 +1,18 @@
-import {
-  Activity,
-  CheckCircle2,
-  ChevronRight,
-  Clock3,
-  ShieldCheck,
-  TriangleAlert,
-  Wrench,
-} from "lucide-react";
+import { Activity, CheckCircle2, Clock3, ShieldCheck, TriangleAlert, Wrench } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import AppShell from "./components/layout/AppShell";
+import Assets from "./pages/Assets";
+import Predictions from "./pages/Predictions";
+import Maintenance from "./pages/Maintenance";
+import IBMBob from "./pages/IBMBob";
+
 import {
   dashboardAssets,
   dashboardSummary,
   missionSchedule,
 } from "./mocks/dashboardMock";
+
 import type { Asset } from "./types/asset";
 
 function StatusDot({ status }: { status: Asset["status"] }) {
@@ -36,13 +35,7 @@ function MiniHealthChart() {
       aria-label="Fleet health trend"
     >
       <defs>
-        <linearGradient
-          id="healthFill"
-          x1="0"
-          y1="0"
-          x2="0"
-          y2="1"
-        >
+        <linearGradient id="healthFill" x1="0" y1="0" x2="0" y2="1">
           <stop
             offset="0%"
             stopColor="#69784F"
@@ -130,9 +123,11 @@ function MissionReadinessChart() {
   return (
     <div className="mt-8">
       <div className="relative h-[310px]">
-        {/* Horizontal grid */}
+
         <div className="absolute inset-x-0 top-0 flex justify-between border-t border-[#E6DCCE] pt-2">
-          <span className="text-[10px] text-[#806B59]">100%</span>
+          <span className="text-[10px] text-[#806B59]">
+            100%
+          </span>
         </div>
 
         <div className="absolute inset-x-0 top-1/4 border-t border-[#E9E0D4]" />
@@ -145,7 +140,6 @@ function MissionReadinessChart() {
           </span>
         </div>
 
-        {/* Chart */}
         <svg
           viewBox="0 0 1000 300"
           preserveAspectRatio="none"
@@ -210,84 +204,80 @@ function MissionReadinessChart() {
             </linearGradient>
           </defs>
 
-          {/* Terracotta / At Risk */}
           <path
             d="M0 250
-               C35 245 65 247 90 235
-               C125 220 150 228 180 216
-               C215 203 240 214 270 197
-               C305 180 335 191 365 174
-               C400 155 430 170 460 153
-               C500 133 525 148 555 131
-               C590 111 620 127 650 108
-               C685 89 715 108 745 91
-               C780 70 810 84 840 65
-               C875 45 905 57 935 40
-               C960 29 980 31 1000 22
-               L1000 300 L0 300 Z"
+              C35 245 65 247 90 235
+              C125 220 150 228 180 216
+              C215 203 240 214 270 197
+              C305 180 335 191 365 174
+              C400 155 430 170 460 153
+              C500 133 525 148 555 131
+              C590 111 620 127 650 108
+              C685 89 715 108 745 91
+              C780 70 810 84 840 65
+              C875 45 905 57 935 40
+              C960 29 980 31 1000 22
+              L1000 300 L0 300 Z"
             fill="url(#riskArea)"
           />
 
-          {/* Sand / Degraded */}
           <path
             d="M0 210
-               C35 202 65 205 90 193
-               C125 177 150 184 180 170
-               C215 155 240 165 270 151
-               C305 134 335 145 365 128
-               C400 110 430 125 460 108
-               C500 89 525 104 555 89
-               C590 72 620 87 650 70
-               C685 52 715 70 745 53
-               C780 35 810 48 840 32
-               C875 18 905 29 935 17
-               C960 10 980 12 1000 7
-               L1000 22
-               C980 31 960 29 935 40
-               C905 57 875 45 840 65
-               C810 84 780 70 745 91
-               C715 108 685 89 650 108
-               C620 127 590 111 555 131
-               C525 148 500 133 460 153
-               C430 170 400 155 365 174
-               C335 191 305 180 270 197
-               C240 214 215 203 180 216
-               C150 228 125 220 90 235
-               C65 247 35 245 0 250 Z"
+              C35 202 65 205 90 193
+              C125 177 150 184 180 170
+              C215 155 240 165 270 151
+              C305 134 335 145 365 128
+              C400 110 430 125 460 108
+              C500 89 525 104 555 89
+              C590 72 620 87 650 70
+              C685 52 715 70 745 53
+              C780 35 810 48 840 32
+              C875 18 905 29 935 17
+              C960 10 980 12 1000 7
+              L1000 22
+              C980 31 960 29 935 40
+              C905 57 875 45 840 65
+              C810 84 780 70 745 91
+              C715 108 685 89 650 108
+              C620 127 590 111 555 131
+              C525 148 500 133 460 153
+              C430 170 400 155 365 174
+              C335 191 305 180 270 197
+              C240 214 215 203 180 216
+              C150 228 125 220 90 235
+              C65 247 35 245 0 250 Z"
             fill="url(#sandArea)"
           />
 
-          {/* Moss / Operational */}
           <path
             d="M0 155
-               C35 147 65 151 90 138
-               C125 121 150 130 180 115
-               C215 97 240 108 270 94
-               C305 77 335 88 365 72
-               C400 54 430 69 460 52
-               C500 34 525 49 555 35
-               C590 19 620 34 650 20
-               C685 5 715 18 745 8
-               C780 0 810 5 840 0
-               C875 0 905 0 935 0
-               C960 0 980 0 1000 0
-               L1000 7
-               C980 12 960 10 935 17
-               C905 29 875 18 840 32
-               C810 48 780 35 745 53
-               C715 70 685 52 650 70
-               C620 87 590 72 555 89
-               C525 104 500 89 460 108
-               C430 125 400 110 365 128
-               C335 145 305 134 270 151
-               C240 165 215 155 180 170
-               C150 184 125 177 90 193
-               C65 205 35 202 0 210 Z"
+              C35 147 65 151 90 138
+              C125 121 150 130 180 115
+              C215 97 240 108 270 94
+              C305 77 335 88 365 72
+              C400 54 430 69 460 52
+              C500 34 525 49 555 35
+              C590 19 620 34 650 20
+              C685 5 715 18 745 8
+              C780 0 810 5 840 0
+              C875 0 905 0 935 0
+              C960 0 980 0 1000 0
+              L1000 7
+              C980 12 960 10 935 17
+              C905 29 875 18 840 32
+              C810 48 780 35 745 53
+              C715 70 685 52 650 70
+              C620 87 590 72 555 89
+              C525 104 500 89 460 108
+              C430 125 400 110 365 128
+              C335 145 305 134 270 151
+              C240 165 215 155 180 170
+              C150 184 125 177 90 193
+              C65 205 35 202 0 210 Z"
             fill="url(#mossArea)"
           />
         </svg>
 
-        {/* Months */}
         <div className="absolute bottom-[-28px] left-0 right-0 flex justify-between">
           {[
             "Jan",
@@ -313,7 +303,6 @@ function MissionReadinessChart() {
         </div>
       </div>
 
-      {/* Legend */}
       <div className="mt-12 flex flex-wrap items-center justify-center gap-6">
         <div className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full bg-[#69784F]" />
@@ -340,7 +329,7 @@ function MissionReadinessChart() {
   );
 }
 
-function App() {
+function Dashboard() {
   const operationalMetrics = [
     {
       label: "Progress",
@@ -370,12 +359,14 @@ function App() {
   ];
 
   return (
-    <AppShell>
+    <>
       <div className="space-y-7">
-        {/* Page heading */}
+
         <section className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
-            <p className="eyebrow">Mission Control</p>
+            <p className="eyebrow">
+              Mission Control
+            </p>
 
             <h1 className="mt-2 text-[42px] font-semibold leading-none tracking-[-0.055em] text-[#3B2A20] sm:text-[48px]">
               Dashboard
@@ -398,13 +389,14 @@ function App() {
           </div>
         </section>
 
-        {/* Summary cards */}
         <section className="grid gap-5 lg:grid-cols-3">
-          {/* Fleet Health */}
+
           <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] p-6 shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
             <div className="flex items-start justify-between">
               <div>
-                <p className="eyebrow">Fleet Health</p>
+                <p className="eyebrow">
+                  Fleet Health
+                </p>
 
                 <h2 className="mt-4 text-[15px] font-semibold text-[#4A3528]">
                   Overall asset health
@@ -427,7 +419,6 @@ function App() {
 
                 <div className="mt-3 flex items-center gap-2">
                   <span className="moss-dot" />
-
                   <span className="text-[10px] text-[#69784F]">
                     +1.2% from last week
                   </span>
@@ -440,7 +431,6 @@ function App() {
             </div>
           </article>
 
-          {/* Active Alerts */}
           <article className="rounded-2xl border-2 border-[#C96D52] bg-[#FBF4EE] p-6 shadow-[0_8px_30px_rgba(155,75,50,0.05)]">
             <div className="flex items-start justify-between">
               <div>
@@ -479,11 +469,12 @@ function App() {
             </div>
           </article>
 
-          {/* Mission Readiness */}
           <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] p-6 shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
             <div className="flex items-start justify-between">
               <div>
-                <p className="eyebrow">Mission Readiness</p>
+                <p className="eyebrow">
+                  Mission Readiness
+                </p>
 
                 <h2 className="mt-4 text-[15px] font-semibold text-[#4A3528]">
                   Patrol assessment
@@ -516,56 +507,42 @@ function App() {
           </article>
         </section>
 
-        {/* Main workspace */}
         <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
-          {/* Readiness chart */}
+
           <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] p-6 shadow-[0_8px_30px_rgba(91,70,48,0.04)] sm:p-7 lg:p-8">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="eyebrow">Readiness Analytics</p>
+            <div>
+              <p className="eyebrow">
+                Readiness Analytics
+              </p>
 
-                <h2 className="mt-2 text-[21px] font-semibold tracking-[-0.025em] text-[#4A3528]">
-                  Mission Readiness over time
-                </h2>
+              <h2 className="mt-2 text-[21px] font-semibold tracking-[-0.025em] text-[#4A3528]">
+                Mission Readiness over time
+              </h2>
 
-                <p className="mt-2 text-[11px] text-[#9B8977]">
-                  Operational readiness trend across the mission cycle.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                className="hidden items-center gap-1 rounded-full border border-[#DED2C0] bg-[#F4ECE1] px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-[#806B59] transition-colors hover:bg-[#EDE2D2] sm:flex"
-              >
-                View details
-
-                <ChevronRight
-                  className="h-3 w-3"
-                  strokeWidth={1.6}
-                />
-              </button>
+              <p className="mt-2 text-[11px] text-[#9B8977]">
+                Operational readiness trend across the mission cycle.
+              </p>
             </div>
 
             <MissionReadinessChart />
           </article>
 
-          {/* Operational status */}
           <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] p-6 shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
             <div className="flex items-start justify-between">
               <div>
-                <p className="eyebrow">Operations</p>
+                <p className="eyebrow">
+                  Operations
+                </p>
 
                 <h2 className="mt-2 text-[21px] font-semibold tracking-[-0.025em] text-[#4A3528]">
                   Operational Status
                 </h2>
               </div>
 
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E4E9DC]">
-                <CheckCircle2
-                  className="h-4 w-4 text-[#69784F]"
-                  strokeWidth={1.7}
-                />
-              </div>
+              <CheckCircle2
+                className="h-4 w-4 text-[#69784F]"
+                strokeWidth={1.7}
+              />
             </div>
 
             <div className="mt-6">
@@ -606,13 +583,14 @@ function App() {
           </article>
         </section>
 
-        {/* Lower operational information */}
         <section className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-          {/* Asset health */}
+
           <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
             <div className="flex items-center justify-between px-6 py-5">
               <div>
-                <p className="eyebrow">Fleet</p>
+                <p className="eyebrow">
+                  Fleet
+                </p>
 
                 <h2 className="mt-2 text-[17px] font-semibold text-[#4A3528]">
                   Asset health
@@ -671,7 +649,8 @@ function App() {
                         </div>
 
                         <p className="mt-2 text-[10px] text-[#806B59]">
-                          {asset.component_name ?? "Component monitoring"}
+                          {asset.component_name ??
+                            "Component monitoring"}
                         </p>
                       </div>
 
@@ -709,7 +688,8 @@ function App() {
 
                     <div className="mt-2 flex justify-between">
                       <span className="text-[8px] text-[#A39484]">
-                        Last service {asset.last_service ?? "Not available"}
+                        Last service{" "}
+                        {asset.last_service ?? "Not available"}
                       </span>
 
                       <span className="text-[8px] text-[#A39484]">
@@ -722,11 +702,12 @@ function App() {
             </div>
           </article>
 
-          {/* Mission schedule */}
           <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
             <div className="flex items-center justify-between px-6 py-5">
               <div>
-                <p className="eyebrow">Schedule</p>
+                <p className="eyebrow">
+                  Schedule
+                </p>
 
                 <h2 className="mt-2 text-[17px] font-semibold text-[#4A3528]">
                   Mission schedule
@@ -780,8 +761,7 @@ function App() {
                       className={`mt-2 text-[7px] font-semibold uppercase tracking-[0.12em] ${
                         mission.readiness_status === "READY"
                           ? "text-[#69784F]"
-                          : mission.readiness_status ===
-                              "NOT_READY"
+                          : mission.readiness_status === "NOT_READY"
                             ? "text-[#B95F46]"
                             : "text-[#927B66]"
                       }`}
@@ -791,7 +771,7 @@ function App() {
                         ? "CONDITIONAL"
                         : mission.readiness_status.replace(
                             "_",
-                            " "
+                            " ",
                           )}
                     </p>
                   </div>
@@ -801,7 +781,6 @@ function App() {
           </article>
         </section>
 
-        {/* Maintenance / system strip */}
         <section className="grid overflow-hidden rounded-2xl border border-[#DED2C0] bg-[#EEE5D7] sm:grid-cols-3">
           <div className="flex items-center gap-3 border-b border-[#DED2C0] px-5 py-4 sm:border-b-0 sm:border-r">
             <CheckCircle2
@@ -855,6 +834,143 @@ function App() {
           </div>
         </section>
       </div>
+    </>
+  );
+}
+
+/* Temporary pages for the other sidebar buttons.
+   These keep the same application shell/design and prevent blank pages.
+*/
+function PlaceholderPage({
+  title,
+  eyebrow,
+  description,
+}: {
+  title: string;
+  eyebrow: string;
+  description: string;
+}) {
+  return (
+    <>
+      <div className="space-y-7">
+        <section>
+          <p className="eyebrow">{eyebrow}</p>
+
+          <h1 className="mt-2 text-[42px] font-semibold leading-none tracking-[-0.055em] text-[#3B2A20] sm:text-[48px]">
+            {title}
+          </h1>
+
+          <p className="mt-3 max-w-xl text-[13px] leading-6 text-[#806B59]">
+            {description}
+          </p>
+        </section>
+
+        <section className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] p-8 shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
+          <div className="flex items-center gap-3">
+            <CheckCircle2
+              className="h-5 w-5 text-[#69784F]"
+              strokeWidth={1.5}
+            />
+
+            <div>
+              <p className="text-[13px] font-semibold text-[#4A3528]">
+                Module connected
+              </p>
+
+              <p className="mt-1 text-[11px] text-[#9B8977]">
+                This workspace is ready for the module content.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </>
+  );
+}
+
+type Page =
+  | "dashboard"
+  | "assets"
+  | "predictions"
+  | "maintenance"
+  | "ibm-bob";
+
+function getPageFromPath(pathname: string): Page {
+  const path = pathname.replace(/^\/+/, "").split("/")[0];
+
+  if (path === "assets") {
+    return "assets";
+  }
+
+  if (path === "predictions") {
+    return "predictions";
+  }
+
+  if (path === "maintenance") {
+    return "maintenance";
+  }
+
+  if (path === "ibm-bob") {
+    return "ibm-bob";
+  }
+
+  return "dashboard";
+}
+function App() {
+  const [currentPage, setCurrentPage] = useState("dashboard");
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case "assets":
+        return <Assets />;
+
+      case "predictions":
+        return (
+          <div className="space-y-7">
+            <section>
+              <p className="eyebrow">Prediction Intelligence</p>
+
+              <h1 className="mt-2 text-[42px] font-semibold leading-none tracking-[-0.055em] text-[#3B2A20] sm:text-[48px]">
+                Predictions
+              </h1>
+
+              <p className="mt-3 max-w-xl text-[13px] leading-6 text-[#806B59]">
+                Monitor predicted asset failures, risk signals, and
+                confidence levels.
+              </p>
+            </section>
+
+            <section className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] p-8">
+              <p className="text-[13px] font-semibold text-[#4A3528]">
+                Prediction Intelligence
+              </p>
+
+              <p className="mt-2 text-[11px] leading-5 text-[#9B8977]">
+                Prediction monitoring module is ready for the next integration
+                step.
+              </p>
+            </section>
+          </div>
+        );
+
+      case "maintenance":
+        return <Maintenance />;
+
+      case "ibm-bob":
+        return <IBMBob />;
+
+      case "dashboard":
+      default:
+        return <Dashboard />;
+    }
+  };
+
+  return (
+    <AppShell
+      currentPage={currentPage}
+      onNavigate={setCurrentPage}
+    >
+      {renderPage()}
     </AppShell>
   );
 }
