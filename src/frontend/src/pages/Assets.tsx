@@ -94,6 +94,11 @@ function Assets() {
     (asset) => asset.status === "Standby",
   ).length;
 
+  const openAsset = (assetId: string) => {
+    window.history.pushState({}, "", `/assets/${assetId}`);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  };
+
   return (
     <div className="space-y-7">
       {/* Page heading */}
@@ -222,9 +227,12 @@ function Assets() {
 
         <div>
           {assets.map((asset) => (
-            <article
+            <button
               key={asset.id}
-              className="border-t border-[#E8DED1] px-6 py-6"
+              type="button"
+              onClick={() => openAsset(asset.id)}
+              className="block w-full cursor-pointer border-t border-[#E8DED1] px-6 py-6 text-left transition-colors hover:bg-[#F5EEE4] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#69784F]"
+              aria-label={`Open ${asset.name}`}
             >
               <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
@@ -291,7 +299,7 @@ function Assets() {
                   </span>
                 </div>
               </div>
-            </article>
+            </button>
           ))}
         </div>
       </section>
