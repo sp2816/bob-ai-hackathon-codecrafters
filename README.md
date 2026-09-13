@@ -1,4 +1,4 @@
-# 🚀 [Your Project Title Here]
+# 🚀 AssetSentinel
 
 > ⚠️ **Replace everything in `[ ]` brackets with your actual content before submission.**
 
@@ -19,7 +19,10 @@
 
 > In 2–3 sentences: What problem does your project solve? Who experiences this problem?
 
-[Describe the real-world problem your project addresses. Be specific about who the user is and what pain point they face.]
+Military organisations cannot always accurately determine whether aircraft,
+vehicles, and critical equipment are mission-ready. Valuable HUMS sensor data
+and service records can remain underutilised, causing maintenance to be
+reactive and failures to occur unexpectedly, reducing operational readiness.
 
 ---
 
@@ -27,18 +30,26 @@
 
 > In 2–3 sentences: What did you build? How does it solve the problem above?
 
-[Describe your solution clearly. Explain the core mechanism — what makes it work.]
+AssetSentinel analyses sensor data, asset usage patterns, and service
+records to generate a dynamic mission-readiness score and identify assets that
+require attention. The system predicts component failure risks, explains the
+factors affecting readiness, and recommends a prioritised maintenance plan
+based on mission impact and equipment health.
 
 ---
 
 ## ✨ Key Features
 
-- **Feature 1:** [Brief description — e.g., "Real-time anomaly detection using watsonx.ai"]
-- **Feature 2:** [Brief description]
-- **Feature 3:** [Brief description]
-- **Feature 4:** [Optional]
-- **Feature 5:** [Optional]
-
+- **Dynamic Readiness Score:** Calculates a continuously updated readiness
+  score for every asset based on component health and operational data.
+- **Predictive Failure Analysis:** Detects risk patterns and identifies
+  components likely to require maintenance before the next mission window.
+- **Explainable Readiness Intelligence:** Shows why an asset is classified as
+  ready, conditionally ready, or non-ready.
+- **Mission-Aware Evaluation:** Evaluates the same asset differently based on
+  the health requirements and criticality of a selected mission.
+- **Maintenance Priority Optimizer:** Recommends which maintenance actions
+  should be performed first based on risk and operational impact.
 ---
 
 ## 🛠️ Tech Stack
@@ -108,14 +119,16 @@ cp .env.example .env
 
 > Be honest — judges appreciate transparency over overclaiming.
 
-- [Limitation 1: e.g., "Authentication is mocked — not production-ready"]
-- [Limitation 2: e.g., "Only tested on Chrome"]
-- [Limitation 3: e.g., "Feature X is scaffolded but not fully implemented"]
-
+- The prototype uses simulated or available sensor and maintenance datasets.
+- Predictions are intended for decision support and demonstration purposes.
+- The prototype focuses on selected component health indicators.
 ---
 
 ## 🏅 What We're Most Proud Of
 
-[Tell the judges what part of your submission is strongest and worth paying close attention to.]
+SentinelReady AI transforms raw maintenance and sensor information into
+mission-aware, explainable decisions. Rather than simply predicting failure,
+the system connects component health, mission requirements, and maintenance
+priority to help users understand what action should be taken and why.
 
 ---
