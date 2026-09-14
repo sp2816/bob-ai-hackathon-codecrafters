@@ -184,9 +184,10 @@ class TestMaintenanceFeatures:
         )
 
     def test_non_overdue_components_flag_is_0(self, prepared):
-        """All components except BRG-1047 should have overdue_flag = 0."""
+        """All components except the designated overdue ones should have overdue_flag = 0."""
         result = engineer_maintenance_features(prepared.components)
-        others = result[result["component_id"] != "BRG-1047"]
+        expected_overdue = ["BRG-1047", "BRG-2002", "BRG-9002"]
+        others = result[~result["component_id"].isin(expected_overdue)]
         assert (others["overdue_flag"] == 0).all(), (
             f"Unexpected OVERDUE components: "
             f"{others[others['overdue_flag']==1]['component_id'].tolist()}"

@@ -45,8 +45,10 @@ based on mission impact and equipment health.
   ready, conditionally ready, or non-ready.
 - **Mission-Aware Evaluation:** Evaluates the same asset differently based on
   the health requirements and criticality of a selected mission.
-- **Maintenance Priority Optimizer:** Recommends which maintenance actions
-  should be performed first based on risk and operational impact.
+- **Readiness Engine:** Computes holistic operational status and mission capability.
+- **Maintenance Priority:** Rank-orders maintenance actions based on ML risk and urgency.
+- **IBM Copilot Integration:** See [IBM Bob Integration Docs](docs/ibm-bob-integration.md) for details on the IDE MCP Server and the real Watsonx.ai chat interface.
+
 ---
 
 ## 🛠️ Tech Stack
