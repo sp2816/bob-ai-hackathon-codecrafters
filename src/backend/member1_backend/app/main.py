@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
+import logging
 from app.routers import (
     assets,
     components,
@@ -14,8 +15,14 @@ from app.routers import (
     notifications,
     chat,
 )
+from app.services.watsonx_service import validate_watsonx_config
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Create all DB tables on startup
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -26,6 +33,15 @@ app = FastAPI(
     ),
     version="1.0.0",
 )
+
+@app.on_event("startup")
+def startup_event():
+    config_status = validate_watsonx_config()
+    logger.info("=== AssetSentinel Startup Audit ===")
+    logger.info(f"Watsonx API Key configured: {'yes' if config_status['watsonx_configured'] else 'no'}")
+    logger.info(f"Watsonx Project ID configured: {'yes' if config_status['project_configured'] else 'no'}")
+    logger.info(f"Watsonx Model ID configured: {'yes' if config_status['model_configured'] else 'no'}")
+    logger.info("===================================")
 
 # ---------------------------------------------------------------------------
 # CORS — allow the React frontend (Vite default port 5173) and any override
