@@ -9,7 +9,7 @@
 # =============================================================================
 
 team:
-  name: "Codecrafter"                             # REQUIRED — e.g., "Orion Squad"
+  name: "Codecrafters"                             # REQUIRED — e.g., "Orion Squad"
   track: "AI"                            # REQUIRED — one of: AI | DevOps | Sustainability | Open
   lead:
     name: "Tisha Jaimin Soni"                           # REQUIRED — e.g., "Alice Chen"
@@ -24,7 +24,6 @@ team:
 
 submission:
   title: "AssetSentinel — Mission Readiness & Predictive Maintenance Copilot"                            # REQUIRED — Project display name, e.g., "SmartOps Dashboard"
-  title: "AssetSentinel"                            # REQUIRED — Project display name, e.g., "SmartOps Dashboard"
 
   problem_statement: >                 # REQUIRED — 1-3 sentences. What problem? Who has it?
     Military organisations struggle to accurately determine whether aircraft,
@@ -48,11 +47,11 @@ submission:
     - "Prioritised maintenance recommendations based on failure risk and operational impact"                              # optional 5th
 
   tech_stack:
-    languages: []                      # REQUIRED — e.g., ["Python", "TypeScript"]
-    frameworks: []                     # e.g., ["FastAPI", "React"]
-    ibm_technologies: []               # e.g., ["watsonx.ai", "IBM Bob", "IBM Cloud Functions"]
-    databases: []                      # e.g., ["PostgreSQL", "Redis"]
-    other: []                          # e.g., ["Docker", "GitHub Actions", "Slack API"]
+    languages: ["Python", "TypeScript", "JavaScript"]                      # REQUIRED — e.g., ["Python", "TypeScript"]
+    frameworks: ["FastAPI", "React"]                     # e.g., ["FastAPI", "React"]
+    ibm_technologies: ["IBM Bob"]               # e.g., ["watsonx.ai", "IBM Bob", "IBM Cloud Functions"]
+    databases: ["SQLite"]                      # e.g., ["PostgreSQL", "Redis"]
+    other: ["Scikit-learn", "Pandas", "NumPy", "SQLAlchemy", "Joblib", "Pytest", "Git", "Github"]                          # e.g., ["Docker", "GitHub Actions", "Slack API"]
 
   what_we_are_most_proud_of: >         # Optional but recommended — guides judges to your best work
     Our mission-aware readiness engine goes beyond a simple ready or not-ready
