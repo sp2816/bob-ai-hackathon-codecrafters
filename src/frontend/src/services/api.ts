@@ -13,6 +13,7 @@ import type {
   ApiReadinessResult,
   ApiFleetSummary,
   ApiMaintenanceRecommendation,
+  ApiNotification,
 } from "../types/api";
 
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "http://127.0.0.1:8000";
@@ -75,10 +76,26 @@ export async function getMaintenanceRecommendations(): Promise<ApiMaintenanceRec
 
 export async function runMlPipeline(): Promise<{ status: string; stored: Record<string, number> }> {
   const { data } = await http.post("/fleet/run-ml");
+  window.dispatchEvent(new Event("refresh-notifications"));
   return data;
 }
 
 export async function runReadinessPipeline(): Promise<{ status: string; generated: Record<string, number> }> {
   const { data } = await http.post("/fleet/run-readiness");
+  window.dispatchEvent(new Event("refresh-notifications"));
+  return data;
+}
+
+// ── Notifications ──────────────────────────────────────────────────────────
+
+export async function getNotifications(): Promise<ApiNotification[]> {
+  const { data } = await http.get<ApiNotification[]>("/notifications/");
+  return data;
+}
+
+// ── Chat ───────────────────────────────────────────────────────────────────
+
+export async function sendChatMessage(message: string): Promise<{ response: string }> {
+  const { data } = await http.post<{ response: string }>("/chat/", { message });
   return data;
 }

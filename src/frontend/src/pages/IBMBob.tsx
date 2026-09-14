@@ -13,6 +13,7 @@ import {
   getFleetReadinessSummary,
   getMaintenanceRecommendations,
   getMissionReadiness,
+  sendChatMessage,
 } from "../services/api";
 import type { ApiFleetSummary, ApiMaintenanceRecommendation, ApiReadinessResult } from "../types/api";
 
@@ -29,96 +30,6 @@ const suggestions = [
   "Explain the latest warning",
 ];
 
-/**
- * Build a context-aware response from real backend data.
- * IBM BOB explains backend-computed results — it does not calculate anything itself.
- */
-function buildBobResponse(
-  question: string,
-  summary: ApiFleetSummary | null,
-  recs: ApiMaintenanceRecommendation[],
-  msnResults: ApiReadinessResult[],
-): string {
-  const text = question.toLowerCase();
-
-  if (!summary) {
-    return "I cannot access the fleet backend at the moment. Please ensure the backend is running and try refreshing.";
-  }
-
-  const { total, counts } = summary;
-
-  if (text.includes("readiness") || text.includes("ready") || text.includes("fleet")) {
-    const readyPct = total > 0 ? Math.round((counts.READY / total) * 100) : 0;
-    const notReadyAssets = msnResults
-      .filter((r) => r.readiness_status === "NOT_READY")
-      .map((r) => r.asset_id);
-    const unique = [...new Set(notReadyAssets)];
-    return (
-      `Current fleet readiness: ${counts.READY} of ${total} assets are READY (${readyPct}%). ` +
-      `${counts.NOT_READY} asset(s) are NOT_READY. ` +
-      (unique.length > 0
-        ? `Assets flagged NOT_READY: ${unique.join(", ")}. `
-        : "") +
-      `${counts.CONDITIONALLY_READY} asset(s) are conditionally ready.`
-    );
-  }
-
-  if (text.includes("attention") || text.includes("focus") || text.includes("priority")) {
-    if (recs.length === 0) {
-      return "No maintenance recommendations are currently queued. Run the readiness pipeline to generate fresh recommendations.";
-    }
-    const top = recs.slice(0, 3);
-    const parts = top.map(
-      (r) => `${r.asset_id} / ${r.component_id} — ${r.action} (urgency: ${r.urgency})`,
-    );
-    return (
-      `Top ${top.length} maintenance priority item(s) from the Maintenance Priority Engine:\n` +
-      parts.join("\n")
-    );
-  }
-
-  if (text.includes("maintenance") || text.includes("service") || text.includes("repair")) {
-    if (recs.length === 0) {
-      return "No maintenance recommendations are currently in the queue. Click 'Run Readiness' to refresh.";
-    }
-    const high = recs.filter((r) => r.urgency === "HIGH");
-    return (
-      `There are ${recs.length} recommendation(s) in the maintenance queue. ` +
-      `${high.length} are HIGH urgency. ` +
-      (high.length > 0
-        ? `Top action: ${high[0].action} for ${high[0].asset_id}.`
-        : "All items are medium or low urgency.")
-    );
-  }
-
-  if (text.includes("warning") || text.includes("alert") || text.includes("risk")) {
-    const notReady = counts.NOT_READY;
-    if (notReady === 0) {
-      return "No assets are currently flagged as NOT_READY. The fleet is operating within acceptable thresholds.";
-    }
-    const topRec = recs.find((r) => r.urgency === "HIGH");
-    return (
-      `${notReady} asset(s) are currently NOT_READY. ` +
-      (topRec
-        ? `Highest priority action: ${topRec.action} for ${topRec.asset_id} / ${topRec.component_id}.`
-        : "Check the Maintenance page for prioritised recommendations.")
-    );
-  }
-
-  if (text.includes("health")) {
-    const readyPct = total > 0 ? Math.round((counts.READY / total) * 100) : 0;
-    return (
-      `Fleet health: ${readyPct}% of assets (${counts.READY}/${total}) are READY. ` +
-      `${counts.NOT_READY} are NOT_READY and ${counts.CONDITIONALLY_READY} are conditionally ready.`
-    );
-  }
-
-  return (
-    "I can help explain fleet health, asset risk, maintenance priorities, mission readiness, and active warnings. " +
-    "My responses are derived from the AssetSentinel backend — I do not independently calculate readiness or failure risk. " +
-    "Try one of the suggested questions below."
-  );
-}
 
 function IBMBob() {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -165,18 +76,28 @@ function IBMBob() {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = (value?: string) => {
+  const sendMessage = async (value?: string) => {
     const question = (value ?? input).trim();
     if (!question) return;
-
-    const response = buildBobResponse(question, summary, recs, msnResults);
 
     setMessages((prev) => [
       ...prev,
       { id: Date.now(), sender: "operator", text: question },
-      { id: Date.now() + 1, sender: "bob", text: response },
     ]);
     setInput("");
+
+    try {
+      const { response } = await sendChatMessage(question);
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now() + 1, sender: "bob", text: response },
+      ]);
+    } catch (e) {
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now() + 1, sender: "bob", text: "Error: Unable to reach the backend chat service." },
+      ]);
+    }
   };
 
   const readyCount    = summary?.counts.READY ?? 0;

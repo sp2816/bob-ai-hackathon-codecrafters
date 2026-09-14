@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Header from "./Header";
 import Sidebar from "./Sidebar";
@@ -16,7 +16,13 @@ function AppShell({
   onNavigate,
 }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    return (localStorage.getItem("app_theme") as "dark" | "light") || "dark";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("app_theme", theme);
+  }, [theme]);
 
   const toggleTheme = () =>
     setTheme((t) => (t === "dark" ? "light" : "dark"));

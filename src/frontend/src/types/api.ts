@@ -99,3 +99,14 @@ export interface ApiMaintenanceRecommendation {
   urgency: string;
   status: MaintenanceRecommendationStatus;
 }
+
+// ── Notifications ──────────────────────────────────────────────────────────
+export interface ApiNotification {
+  id: string;
+  title: string;
+  message: string;
+  severity: string;
+  source: string;
+  asset_id: string | null;
+  timestamp: string;
+}
