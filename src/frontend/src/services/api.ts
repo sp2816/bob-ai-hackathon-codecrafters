@@ -14,6 +14,8 @@ import type {
   ApiFleetSummary,
   ApiMaintenanceRecommendation,
   ApiNotification,
+  AssetCreateRequest,
+  AssetCreateResponse,
 } from "../types/api";
 
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "http://127.0.0.1:8000";
@@ -33,6 +35,19 @@ export async function getAssets(): Promise<ApiAsset[]> {
 
 export async function getAsset(assetId: string): Promise<ApiAsset> {
   const { data } = await http.get<ApiAsset>(`/assets/${assetId}`);
+  return data;
+}
+
+/**
+ * Add a new asset and run the full ML + Readiness + Maintenance pipeline.
+ * Uses extended timeout (60s) because single-component ML inference can take several seconds.
+ * Returns complete analysis results from the backend — no frontend calculations.
+ */
+export async function createAsset(request: AssetCreateRequest): Promise<AssetCreateResponse> {
+  const { data } = await http.post<AssetCreateResponse>("/assets/", request, {
+    timeout: 60_000,
+  });
+  window.dispatchEvent(new Event("refresh-notifications"));
   return data;
 }
 
