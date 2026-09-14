@@ -1,8 +1,6 @@
 
 # 🚀 AssetSentinel — Mission Readiness & Predictive Maintenance Copilot
 
-# 🚀 AssetSentinel
-
 ## 👥 Team
 
 | Field | Value |
@@ -55,11 +53,11 @@ based on mission impact and equipment health.
 
 | Category | Technologies |
 |---|---|
-| **Languages** | [e.g., Python, TypeScript] |
-| **Frameworks** | [e.g., FastAPI, React] |
-| **IBM Technologies** | [e.g., watsonx.ai, IBM Bob, IBM Cloud] |
-| **Databases** | [e.g., PostgreSQL, Redis] |
-| **Other** | [e.g., Docker, GitHub Actions] |
+| **Languages** | Python, TypeScript, JavaScript |
+| **Frameworks** | FastAPI, React |
+| **IBM Technologies** | IBM Bob |
+| **Databases** | SQLite |
+| **Other** | Scikit-learn, Pandas, NumPy, SQLAlchemy, Joblib, Pytest, Git, GitHub |
 
 ---
 
@@ -87,7 +85,7 @@ based on mission impact and equipment health.
 
 ```bash
 # 1. Clone the repo
-https://github.com/sp2816/bob-ai-hackathon-codecrafters.git
+git clone https://github.com/sp2816/bob-ai-hackathon-codecrafters.git
 cd bob-ai-hackathon-codecrafters
 
 # 2. Install dependencies
