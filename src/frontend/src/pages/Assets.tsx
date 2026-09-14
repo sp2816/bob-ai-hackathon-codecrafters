@@ -692,7 +692,7 @@ function AddAssetModal({ onClose, onSuccess }: AddAssetModalProps) {
                     <Input
                       type="number"
                       required
-                      min={1}
+                      min={50}
                       step={50}
                       value={svcInterval}
                       onChange={e => setSvcInterval(e.target.value)}

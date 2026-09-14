@@ -27,6 +27,11 @@ def evaluate_for_mission(
     if not evidence_list:
         raise ValueError("evidence_list cannot be empty.")
 
+    # Check if ANY component in the evidence list is explicitly required by the mission
+    has_required_component = any(
+        ev.component in mission.required_components for ev in evidence_list
+    )
+
     mission_evidence = []
     for ev in evidence_list:
         # Create a copy so we don't mutate the generic evidence cache
@@ -34,10 +39,16 @@ def evaluate_for_mission(
 
         # Contract §12: The mission-specific impact is derived from
         # mission.required_components and mission.criticality.
-        if ev_copy.component in mission.required_components:
-            ev_copy.mission_impact = mission.criticality
+        # Fallback: if an asset has NO components that match the explicit
+        # required_components, we apply the mission criticality universally
+        # to ensure the asset still receives a mission-specific evaluation.
+        if has_required_component:
+            if ev_copy.component in mission.required_components:
+                ev_copy.mission_impact = mission.criticality
+            else:
+                ev_copy.mission_impact = "NONE"
         else:
-            ev_copy.mission_impact = "NONE"
+            ev_copy.mission_impact = mission.criticality
 
         mission_evidence.append(ev_copy)
 
