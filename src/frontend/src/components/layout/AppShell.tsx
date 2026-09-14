@@ -16,20 +16,35 @@ function AppShell({
   onNavigate,
 }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  const toggleTheme = () =>
+    setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F7F1E7] text-[#3B2A20]">
+    <div
+      data-theme={theme}
+      className="flex h-screen overflow-hidden"
+      style={{ backgroundColor: "var(--surface-base)", color: "var(--text-primary)" }}
+    >
       <Sidebar
         collapsed={collapsed}
-        onToggle={() => setCollapsed((value) => !value)}
+        onToggle={() => setCollapsed((v) => !v)}
         currentPage={currentPage}
         onNavigate={onNavigate}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <Header currentPage={currentPage} />
+        <Header
+          currentPage={currentPage}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
 
-        <main className="flex-1 overflow-y-auto">
+        <main
+          className="flex-1 overflow-y-auto"
+          style={{ backgroundColor: "var(--surface-base)" }}
+        >
           <div className="mx-auto w-full max-w-[1700px] px-5 py-6 sm:px-7 sm:py-7 lg:px-9 lg:py-8">
             {children}
           </div>

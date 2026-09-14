@@ -1,4 +1,10 @@
-import { Activity, Box, CheckCircle2, TriangleAlert, RefreshCw } from "lucide-react";
+import {
+  Activity,
+  CheckCircle2,
+  Package,
+  RefreshCw,
+  TriangleAlert,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { getAssets } from "../services/api";
 import type { ApiAsset } from "../types/api";
@@ -6,29 +12,26 @@ import type { ApiAsset } from "../types/api";
 function readinessToUiStatus(status: string): "Healthy" | "Warning" | "Standby" {
   if (status === "READY") return "Healthy";
   if (status === "NOT_READY") return "Warning";
-  return "Standby"; // CONDITIONALLY_READY or unknown
+  return "Standby";
 }
 
 function StatusIcon({ status }: { status: "Healthy" | "Warning" | "Standby" }) {
-  if (status === "Warning") return <TriangleAlert className="h-4 w-4 text-[#B95F46]" strokeWidth={1.7} />;
-  if (status === "Standby") return <Activity className="h-4 w-4 text-[#A69A89]" strokeWidth={1.7} />;
-  return <CheckCircle2 className="h-4 w-4 text-[#69784F]" strokeWidth={1.7} />;
+  if (status === "Warning")
+    return <TriangleAlert className="h-[18px] w-[18px]" style={{ color: "var(--danger-text)" }} strokeWidth={1.8} />;
+  if (status === "Standby")
+    return <Activity className="h-[18px] w-[18px]" style={{ color: "var(--warning-text)" }} strokeWidth={1.8} />;
+  return <CheckCircle2 className="h-[18px] w-[18px]" style={{ color: "var(--success-text)" }} strokeWidth={1.8} />;
 }
 
-function statusTextColor(status: "Healthy" | "Warning" | "Standby") {
-  if (status === "Warning") return "text-[#B95F46]";
-  if (status === "Standby") return "text-[#A69A89]";
-  return "text-[#69784F]";
-}
-
-function progressColor(status: "Healthy" | "Warning" | "Standby") {
-  return status === "Warning" ? "bg-[#B95F46]" : "bg-[#69784F]";
-}
-
-/** Convert readiness_score (0–1) to a 0–100 health % for display. */
 function scoreToPercent(score: number | null): number {
   if (score === null) return 50;
   return Math.round(score * 100);
+}
+
+function StatusBadge({ status }: { status: "Healthy" | "Warning" | "Standby" }) {
+  if (status === "Healthy") return <span className="badge-ready">READY</span>;
+  if (status === "Warning") return <span className="badge-not-ready">NOT READY</span>;
+  return <span className="badge-conditional">CONDITIONAL</span>;
 }
 
 function Assets() {
@@ -52,15 +55,14 @@ function Assets() {
   const standby = assets.filter((a) => readinessToUiStatus(a.current_status) === "Standby").length;
 
   return (
-    <div className="space-y-7">
-      <section className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+    <div className="space-y-6">
+      {/* Page header */}
+      <section className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <p className="eyebrow">Fleet Management</p>
-          <h1 className="mt-2 text-[42px] font-semibold leading-none tracking-[-0.055em] text-[#3B2A20] sm:text-[48px]">
-            Assets
-          </h1>
-          <p className="mt-3 max-w-xl text-[13px] leading-6 text-[#806B59]">
-            Monitor fleet health, component condition, service history, and operational status across all registered assets.
+          <h1 className="page-title mt-2">Assets</h1>
+          <p className="body-text mt-2 max-w-xl">
+            Monitor fleet health, component condition, and operational status across all registered assets.
           </p>
         </div>
 
@@ -68,92 +70,125 @@ function Assets() {
           <button
             type="button"
             onClick={fetchAssets}
-            title="Refresh assets"
-            className="flex items-center gap-1.5 rounded-full border border-[#D8CBB9] bg-[#EEE5D7] px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#806B59] hover:bg-[#E5D8C5]"
+            className="btn-secondary-sm"
           >
-            <RefreshCw className="h-3 w-3" />
+            <RefreshCw className="h-3.5 w-3.5" />
             Refresh
           </button>
-          <span className="rounded-full border border-[#C2CEAE] bg-[#DDE5D1] px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#596842]">
+          <span
+            className="badge-info"
+            style={{ padding: "6px 12px" }}
+          >
             {loading ? "…" : `${assets.length} Assets`}
           </span>
         </div>
       </section>
 
-      {/* Summary cards */}
-      <section className="grid gap-5 md:grid-cols-3">
-        <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] p-6 shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
+      {/* Summary KPI cards */}
+      <section className="grid gap-4 md:grid-cols-3">
+        {/* Healthy */}
+        <article
+          className="card rounded-xl p-5"
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = ""; }}
+          style={{ transition: "transform 200ms ease" }}
+        >
           <div className="flex items-start justify-between">
             <div>
-              <p className="eyebrow">Healthy</p>
-              <div className="mt-4 text-[42px] font-light leading-none tracking-[-0.06em] text-[#3B2A20]">
+              <p className="eyebrow">Ready</p>
+              <div className="mt-3 text-[40px] font-bold leading-none tracking-[-0.05em]" style={{ color: "var(--success-text)" }}>
                 {loading ? "—" : healthy}
               </div>
-              <p className="mt-3 text-[10px] text-[#69784F]">Assets ready for deployment</p>
+              <p className="mt-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                Assets ready for deployment
+              </p>
             </div>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E0E7D6]">
-              <CheckCircle2 className="h-4 w-4 text-[#69784F]" strokeWidth={1.7} />
+            <div className="icon-container-success">
+              <CheckCircle2 className="h-5 w-5" strokeWidth={1.8} />
             </div>
           </div>
         </article>
 
-        <article className="rounded-2xl border-2 border-[#C96D52] bg-[#FBF4EE] p-6 shadow-[0_8px_30px_rgba(155,75,50,0.05)]">
+        {/* Not ready */}
+        <article
+          className="card rounded-xl p-5"
+          style={{
+            border: "1px solid var(--danger-border)",
+            transition: "transform 200ms ease",
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = ""; }}
+        >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A85B45]">Warning</p>
-              <div className="mt-4 text-[42px] font-light leading-none tracking-[-0.06em] text-[#B95F46]">
+              <p className="eyebrow" style={{ color: "var(--danger-text)" }}>Not Ready</p>
+              <div className="mt-3 text-[40px] font-bold leading-none tracking-[-0.05em]" style={{ color: "var(--danger-text)" }}>
                 {loading ? "—" : warning}
               </div>
-              <p className="mt-3 text-[10px] text-[#A85B45]">Requires attention</p>
+              <p className="mt-2 text-xs" style={{ color: "var(--danger-text)", opacity: 0.7 }}>
+                Requires immediate attention
+              </p>
             </div>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F0D8CF]">
-              <TriangleAlert className="h-4 w-4 text-[#B95F46]" strokeWidth={1.7} />
+            <div className="icon-container-danger">
+              <TriangleAlert className="h-5 w-5" strokeWidth={1.8} />
             </div>
           </div>
         </article>
 
-        <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] p-6 shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
+        {/* Standby */}
+        <article
+          className="card rounded-xl p-5"
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = ""; }}
+          style={{ transition: "transform 200ms ease" }}
+        >
           <div className="flex items-start justify-between">
             <div>
-              <p className="eyebrow">Standby</p>
-              <div className="mt-4 text-[42px] font-light leading-none tracking-[-0.06em] text-[#3B2A20]">
+              <p className="eyebrow">Conditional</p>
+              <div className="mt-3 text-[40px] font-bold leading-none tracking-[-0.05em]" style={{ color: "var(--warning-text)" }}>
                 {loading ? "—" : standby}
               </div>
-              <p className="mt-3 text-[10px] text-[#9B8977]">Conditionally ready</p>
+              <p className="mt-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                Conditionally ready
+              </p>
             </div>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#EEE8DE]">
-              <Activity className="h-4 w-4 text-[#A69A89]" strokeWidth={1.7} />
+            <div className="icon-container-warning">
+              <Activity className="h-5 w-5" strokeWidth={1.8} />
             </div>
           </div>
         </article>
       </section>
 
-      {/* Asset list */}
-      <section className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
-        <div className="flex items-center justify-between px-6 py-5">
+      {/* Asset table */}
+      <section className="card rounded-xl overflow-hidden">
+        <div
+          className="flex items-center justify-between px-6 py-4"
+          style={{ borderBottom: "1px solid var(--border-default)" }}
+        >
           <div>
             <p className="eyebrow">Fleet</p>
-            <h2 className="mt-2 text-[21px] font-semibold tracking-[-0.025em] text-[#4A3528]">Asset health</h2>
-            <p className="mt-2 text-[11px] text-[#9B8977]">
-              Current readiness status and operational hours for each asset.
+            <h2 className="section-title mt-1">Asset Health</h2>
+            <p className="body-text mt-1 text-xs">
+              Current readiness, operational hours, and health index per asset.
             </p>
           </div>
-          <Box className="h-5 w-5 text-[#806B59]" strokeWidth={1.5} />
+          <Package className="h-5 w-5" style={{ color: "var(--text-muted)" }} strokeWidth={1.5} />
         </div>
 
         {loading && (
-          <div className="border-t border-[#E8DED1] px-6 py-8 text-center text-[12px] text-[#9B8977]">
+          <div className="px-6 py-10 text-center text-sm" style={{ color: "var(--text-muted)" }}>
             Loading assets…
           </div>
         )}
 
         {error && (
-          <div className="border-t border-[#E8DED1] px-6 py-8 text-center">
-            <p className="text-[12px] text-[#B95F46]">{error}</p>
+          <div className="px-6 py-10 text-center">
+            <p className="text-sm" style={{ color: "var(--danger-text)" }}>{error}</p>
             <button
               type="button"
               onClick={fetchAssets}
-              className="mt-3 text-[11px] font-semibold text-[#69784F] underline"
+              className="mt-3 text-xs font-semibold underline"
+              style={{ color: "var(--text-brand)" }}
             >
               Retry
             </button>
@@ -161,7 +196,7 @@ function Assets() {
         )}
 
         {!loading && !error && assets.length === 0 && (
-          <div className="border-t border-[#E8DED1] px-6 py-8 text-center text-[12px] text-[#9B8977]">
+          <div className="px-6 py-10 text-center text-sm" style={{ color: "var(--text-muted)" }}>
             No assets found. Run the seed script to populate the database.
           </div>
         )}
@@ -171,57 +206,85 @@ function Assets() {
             {assets.map((asset) => {
               const uiStatus = readinessToUiStatus(asset.current_status);
               const healthPct = scoreToPercent(asset.readiness_score);
-              return (
-                <div key={asset.asset_id} className="border-t border-[#E8DED1] px-6 py-6">
-                  <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-3">
-                        <StatusIcon status={uiStatus} />
-                        <div>
-                          <p className="font-mono text-[12px] font-semibold text-[#4A3528]">{asset.asset_id}</p>
-                          <p className="mt-1 text-[10px] text-[#9B8977]">{asset.asset_name}</p>
-                        </div>
-                      </div>
+              const fillClass =
+                uiStatus === "Healthy"
+                  ? "progress-fill-success"
+                  : uiStatus === "Warning"
+                  ? "progress-fill-danger"
+                  : "progress-fill-warning";
 
-                      <div className="mt-4 grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#9B8977]">Type</p>
-                          <p className="mt-1 text-[12px] text-[#5D4535]">{asset.asset_type}</p>
+              return (
+                <div
+                  key={asset.asset_id}
+                  className="px-6 py-5 transition-colors duration-100"
+                  style={{ borderBottom: "1px solid var(--border-subtle)" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--surface-elevated)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = ""; }}
+                >
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    {/* Left: asset info */}
+                    <div className="flex min-w-0 items-start gap-4">
+                      <div className="mt-0.5">
+                        <StatusIcon status={uiStatus} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-[13px] font-bold" style={{ color: "var(--text-primary)" }}>
+                            {asset.asset_id}
+                          </span>
+                          <StatusBadge status={uiStatus} />
                         </div>
-                        <div>
-                          <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#9B8977]">
-                            Op. Hours
-                          </p>
-                          <p className="mt-1 text-[12px] text-[#5D4535]">
-                            {asset.operational_hours.toLocaleString()} h
-                          </p>
+                        <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
+                          {asset.asset_name}
+                        </p>
+
+                        <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-3">
+                          <div>
+                            <p className="data-label">Type</p>
+                            <p className="mt-1 text-[13px] font-medium" style={{ color: "var(--text-primary)" }}>
+                              {asset.asset_type}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="data-label">Op. Hours</p>
+                            <p className="mt-1 text-[13px] font-medium" style={{ color: "var(--text-primary)" }}>
+                              {asset.operational_hours.toLocaleString()} h
+                            </p>
+                          </div>
+                          <div>
+                            <p className="data-label">Unit</p>
+                            <p className="mt-1 text-[13px] font-medium" style={{ color: "var(--text-primary)" }}>
+                              {asset.unit}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="text-left sm:text-right">
-                      <span className="text-[28px] font-light tracking-[-0.05em] text-[#3B2A20]">
+                    {/* Right: health score */}
+                    <div className="flex flex-col items-end gap-1 sm:shrink-0 sm:text-right">
+                      <span
+                        className="text-[32px] font-bold leading-none tracking-[-0.05em]"
+                        style={{
+                          color:
+                            uiStatus === "Healthy"
+                              ? "var(--success-text)"
+                              : uiStatus === "Warning"
+                              ? "var(--danger-text)"
+                              : "var(--warning-text)",
+                        }}
+                      >
                         {healthPct}%
                       </span>
-                      <p
-                        className={`mt-1 text-[8px] font-semibold uppercase tracking-[0.12em] ${statusTextColor(uiStatus)}`}
-                      >
-                        {uiStatus}
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em]" style={{ color: "var(--text-muted)" }}>
+                        Readiness index
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-5">
-                    <div className="soft-progress h-2">
-                      <div
-                        className={`h-full rounded-full ${progressColor(uiStatus)}`}
-                        style={{ width: `${Math.max(healthPct, 3)}%` }}
-                      />
-                    </div>
-                    <div className="mt-2 flex justify-between">
-                      <span className="text-[8px] text-[#A39484]">Unit: {asset.unit}</span>
-                      <span className="text-[8px] text-[#A39484]">Readiness index</span>
-                    </div>
+                  {/* Progress bar */}
+                  <div className="progress-track mt-4">
+                    <div className={fillClass} style={{ width: `${Math.max(healthPct, 2)}%` }} />
                   </div>
                 </div>
               );
@@ -230,21 +293,41 @@ function Assets() {
         )}
       </section>
 
-      <section className="grid overflow-hidden rounded-2xl border border-[#DED2C0] bg-[#EEE5D7] sm:grid-cols-2">
-        <div className="flex items-center gap-3 border-b border-[#DED2C0] px-5 py-4 sm:border-b-0 sm:border-r">
-          <CheckCircle2 className="h-5 w-5 text-[#69784F]" strokeWidth={1.5} />
+      {/* Footer status row */}
+      <section
+        className="grid overflow-hidden rounded-xl sm:grid-cols-2"
+        style={{
+          backgroundColor: "var(--surface-card)",
+          border: "1px solid var(--border-default)",
+        }}
+      >
+        <div
+          className="flex items-center gap-3 px-5 py-4"
+          style={{ borderBottom: "1px solid var(--border-default)" }}
+        >
+          <div className="icon-container-success h-9 w-9">
+            <CheckCircle2 className="h-4 w-4" strokeWidth={1.8} />
+          </div>
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#6F5B4A]">Fleet Status</p>
-            <p className="mt-1 text-[10px] text-[#978575]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.1em]" style={{ color: "var(--text-muted)" }}>
+              Fleet Status
+            </p>
+            <p className="mt-0.5 text-sm font-medium" style={{ color: "var(--text-primary)" }}>
               {loading ? "Loading…" : `${healthy} asset${healthy !== 1 ? "s" : ""} currently operational`}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3 px-5 py-4">
-          <Activity className="h-5 w-5 text-[#69784F]" strokeWidth={1.5} />
+        <div className="flex items-center gap-3 px-5 py-4 sm:border-l" style={{ borderColor: "var(--border-default)" }}>
+          <div className="icon-container-brand h-9 w-9">
+            <Activity className="h-4 w-4" strokeWidth={1.8} />
+          </div>
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#6F5B4A]">Monitoring</p>
-            <p className="mt-1 text-[10px] text-[#978575]">Continuous health monitoring enabled</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.1em]" style={{ color: "var(--text-muted)" }}>
+              Monitoring
+            </p>
+            <p className="mt-0.5 text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+              Continuous health monitoring enabled
+            </p>
           </div>
         </div>
       </section>
