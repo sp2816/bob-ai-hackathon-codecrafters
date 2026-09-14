@@ -41,3 +41,17 @@ MNT-0039,AS-1009,ENG-1009,INSPECTION,2026-06-15,Routine inspection of engine. Se
 MNT-0040,AS-1009,ENG-1009,INSPECTION,2026-09-27,Scheduled inspection in approximately 250 h. No immediate action required.,SCHEDULED,Record created at 570 operational hours.
 MNT-0041,AS-1009,SEN-1009,INSPECTION,2026-04-16,Routine inspection of sensors. Serviceable. No corrective action required.,COMPLETED,Completed at 540 operational hours.
 MNT-0042,AS-1009,SEN-1009,INSPECTION,2026-09-27,Scheduled inspection in approximately 320 h. No immediate action required.,SCHEDULED,Record created at 570 operational hours.
+MNT-BRG-9001-001,AS-9001,BRG-9001,inspection,2024-06-01,Routine inspection — passed,COMPLETED,
+MNT-BRG-9002-001,AS-9002,BRG-9002,inspection,2024-02-01,Inspection passed — overdue for next,OVERDUE,
+MNT-BRG-9001-001,AS-9001,BRG-9001,inspection,2024-06-01,Routine inspection — passed,COMPLETED,
+MNT-BRG-SHARED-001,AS-9001,BRG-SHARED,inspection,2024-06-01,Routine inspection — passed,COMPLETED,
+MNT-BRG-9001-001,AS-9001,BRG-9001,inspection,2024-06-01,Routine inspection — passed,COMPLETED,
+MNT-BRG-9001-001,AS-9001,BRG-9001,inspection,2024-06-01,Routine inspection — passed,COMPLETED,
+MNT-BRG-9001-001,AS-9001,BRG-9001,inspection,2024-06-01,Routine inspection — passed,COMPLETED,
+MNT-BRG-9001-001,AS-9001,BRG-9001,inspection,2024-06-01,Routine inspection — passed,COMPLETED,
+MNT-BRG-9001-001,AS-9001,BRG-9001,inspection,2024-06-01,Routine inspection — passed,COMPLETED,
+MNT-BRG-9002-001,AS-9002,BRG-9002,inspection,2024-02-01,Inspection passed — overdue for next,OVERDUE,
+MNT-BRG-9001-001,AS-9001,BRG-9001,inspection,2024-06-01,Routine inspection — passed,COMPLETED,
+MNT-BRG-9001-001,AS-9001,BRG-9001,inspection,2024-06-01,Routine inspection — passed,COMPLETED,
+MNT-BRG-2001-001,AS-2001,BRG-2001,inspection,2024-06-01,Routine inspection — passed,COMPLETED,
+MNT-BRG-2002-001,AS-2002,BRG-2002,inspection,2024-02-01,Inspection passed — overdue for next,OVERDUE,

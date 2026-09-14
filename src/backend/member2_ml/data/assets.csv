@@ -9,3 +9,17 @@ AS-1006,Rotary Wing Asset 1006,aircraft,Unit-Delta,320.0,UNKNOWN
 AS-1007,Ground Vehicle 1007,ground_vehicle,Unit-Delta,890.0,UNKNOWN
 AS-1008,Fixed Wing Asset 1008,aircraft,Unit-Echo,1340.0,UNKNOWN
 AS-1009,Ground Vehicle 1009,ground_vehicle,Unit-Echo,570.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9002,Critical Asset AS-9002,aircraft,Unit-Test,2500.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9002,Critical Asset AS-9002,aircraft,Unit-Test,2500.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-2001,Test Asset AS-2001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-2002,Critical Asset AS-2002,aircraft,Unit-Test,2500.0,UNKNOWN

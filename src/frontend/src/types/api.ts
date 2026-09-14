@@ -110,3 +110,86 @@ export interface ApiNotification {
   asset_id: string | null;
   timestamp: string;
 }
+
+// ── Add Asset (POST /assets/) ───────────────────────────────────────────────
+
+/** Synthetic condition profile for ML feature generation. Not historical telemetry. */
+export type SensorCondition = "NORMAL" | "DEGRADING" | "CRITICAL";
+export type AssetCriticality = "LOW" | "MEDIUM" | "HIGH";
+export type MaintenanceStatus = "COMPLETED" | "OVERDUE" | "SCHEDULED";
+export type MaintenanceType = "inspection" | "service" | "repair";
+
+export interface ComponentInput {
+  component_id: string;
+  component_type: string;
+  criticality: AssetCriticality;
+  operating_hours: number;
+  life_limit?: number;
+  service_interval_hours: number;
+  installation_date?: string;
+}
+
+export interface SensorInput {
+  /** Synthetic condition profile driving the deterministic observation window */
+  condition: SensorCondition;
+  vibration: number;
+  temperature: number;
+  pressure: number;
+  RPM: number;
+}
+
+export interface MaintenanceInput {
+  maintenance_type: MaintenanceType;
+  maintenance_date: string;
+  technician_action: string;
+  status: MaintenanceStatus;
+  hours_since_service: number;
+  notes?: string;
+}
+
+export interface AssetCreateRequest {
+  asset_id: string;
+  asset_name: string;
+  asset_type: string;
+  unit: string;
+  operational_hours: number;
+  component: ComponentInput;
+  sensors: SensorInput;
+  maintenance: MaintenanceInput;
+}
+
+export interface PredictionSummary {
+  prediction_id: string;
+  failure_probability: number;
+  risk_category: RiskCategory;
+}
+
+export interface AnomalySummary {
+  anomaly_id: string;
+  anomaly_status: AnomalyStatus;
+  anomaly_severity: AnomalySeverity;
+  sensor: string;
+}
+
+export interface ReadinessSummary {
+  readiness_status: ReadinessStatus;
+  readiness_score: number;
+  reasons: string[];
+}
+
+export interface RecommendationSummary {
+  recommendation_id: string;
+  action: string;
+  priority: number;
+  urgency: string;
+  risk: string;
+}
+
+export interface AssetCreateResponse {
+  asset: ApiAsset;
+  prediction: PredictionSummary;
+  anomaly: AnomalySummary;
+  readiness: ReadinessSummary;
+  recommendation: RecommendationSummary | null;
+  pipeline_note: string;
+}
