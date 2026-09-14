@@ -121,14 +121,14 @@ def create_asset_and_analyze(db: Session, request: AssetCreateRequest) -> dict:
                 ml_result.failure_probability, ml_result.risk_category, ml_result.anomaly_status)
 
     # ── Step 4: Single-asset readiness + maintenance priority ─────────────
-    readiness_result, maintenance_recs = _run_single_asset_readiness(request, ml_result)
+    readiness_result, mission_results, maintenance_recs = _run_single_asset_readiness(db, request, ml_result)
 
     logger.info("[intake] Readiness: %s (score=%.3f)",
                 readiness_result.readiness_status, readiness_result.readiness_score)
 
     # ── Step 5: Persist everything to SQLite in one transaction ───────────
     asset_row, pred_row, anom_row, rec_row = _persist_all(
-        db, request, ml_result, readiness_result, maintenance_recs,
+        db, request, ml_result, readiness_result, mission_results, maintenance_recs,
         hours_at_last_service,
     )
 
@@ -159,13 +159,15 @@ def _validate_uniqueness(db: Session, asset_id: str, component_id: str) -> None:
 # Single-asset readiness pipeline
 # ===========================================================================
 
-def _run_single_asset_readiness(request: AssetCreateRequest, ml_result):
+def _run_single_asset_readiness(db: Session, request: AssetCreateRequest, ml_result):
     """
     Run Member 3's Readiness Engine for this single new asset only.
     Does NOT re-run the entire fleet.
     """
     from member2_ml.services.prediction_service import ComponentPredictionResult as CPR
     from member3_readiness.missions.models import MissionInfo
+    from app.models.mission import Mission
+    import json
 
     cpr = CPR(
         prediction_id=ml_result.prediction_id,
@@ -203,13 +205,39 @@ def _run_single_asset_readiness(request: AssetCreateRequest, ml_result):
     evidence = ReadinessService.build_component_evidence(cpr, c_info, m_info)
     readiness = ReadinessService.evaluate_asset_readiness([evidence])
 
+    # Mission readiness
+    missions = db.query(Mission).all()
+    mission_infos = []
+    for m in missions:
+        req_comps = json.loads(m.required_components) if m.required_components else []
+        try:
+            m_time = datetime.fromisoformat(m.scheduled_time)
+        except ValueError:
+            m_time = datetime.strptime(m.scheduled_time, "%Y-%m-%dT%H:%M:%S")
+
+        m_info = MissionInfo(
+            mission_id=m.mission_id,
+            mission_name=m.mission_name,
+            mission_type=m.mission_type,
+            criticality=m.criticality,
+            scheduled_time=m_time,
+            required_components=req_comps,
+            readiness_threshold=m.readiness_threshold
+        )
+        mission_infos.append(m_info)
+        
+    mission_results = []
+    for m_info in mission_infos:
+        m_res = ReadinessService.evaluate_mission_readiness([evidence], m_info)
+        mission_results.append(m_res)
+
     # Build component_id_map for maintenance ranking
     component_id_map = {
         (request.asset_id, request.component.component_type): request.component.component_id
     }
     recommendations = ReadinessService.rank_maintenance_actions([evidence], component_id_map)
 
-    return readiness, recommendations
+    return readiness, mission_results, recommendations
 
 
 # ===========================================================================
@@ -221,6 +249,7 @@ def _persist_all(
     request: AssetCreateRequest,
     ml_result,
     readiness_result,
+    mission_results,
     maintenance_recs,
     hours_at_last_service: float,
 ):
@@ -304,6 +333,21 @@ def _persist_all(
         timestamp=readiness_result.timestamp,
     )
     db.add(rdy_row)
+    
+    # ── Mission Readiness results ─────────────────────────────────────────
+    for m_res in mission_results:
+        m_rid = f"RDY-{request.asset_id}-{m_res.mission_id}"
+        m_row = ReadinessResult(
+            result_id=m_rid,
+            asset_id=request.asset_id,
+            mission_id=m_res.mission_id,
+            readiness_score=m_res.readiness_score,
+            readiness_status=m_res.readiness_status,
+            reasons=json.dumps(m_res.reasons),
+            evidence=json.dumps([e.model_dump() for e in m_res.evidence]),
+            timestamp=m_res.timestamp,
+        )
+        db.add(m_row)
 
     # ── Maintenance recommendations ────────────────────────────────────────
     rec_row = None

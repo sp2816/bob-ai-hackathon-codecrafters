@@ -82,3 +82,19 @@ AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
 AS-2001,Test Asset AS-2001,aircraft,Unit-Test,1000.0,UNKNOWN
 AS-2002,Critical Asset AS-2002,aircraft,Unit-Test,2500.0,UNKNOWN
 AS-001,Aircraft 001,aircraft,Unit-Alpha,1000.0,UNKNOWN
+AS-2001,Aircraft 2001,aircraft,Unit-Alpha,1000.0,UNKNOWN
+AS-2002,Aircraft 2002,aircraft,Unit-Alpha,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9002,Critical Asset AS-9002,aircraft,Unit-Test,2500.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9002,Critical Asset AS-9002,aircraft,Unit-Test,2500.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-2001,Test Asset AS-2001,aircraft,Unit-Test,1000.0,UNKNOWN
+AS-2002,Critical Asset AS-2002,aircraft,Unit-Test,2500.0,UNKNOWN

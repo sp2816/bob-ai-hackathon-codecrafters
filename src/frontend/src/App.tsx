@@ -41,11 +41,27 @@ const MISSION_PRIORITY: Record<string, string> = {
   "MSN-003": "HIGH",
 };
 
-function readinessStatusForMission(results: ApiReadinessResult[]): string {
-  if (results.length === 0) return "UNKNOWN";
-  if (results.some((r) => r.readiness_status === "NOT_READY")) return "NOT_READY";
-  if (results.some((r) => r.readiness_status === "CONDITIONALLY_READY")) return "CONDITIONALLY_READY";
-  return "READY";
+function getBestMissionReadiness(results: ApiReadinessResult[]): { status: string; score: number | null } {
+  if (results.length === 0) return { status: "UNKNOWN", score: null };
+
+  const latestByAsset = new Map<string, ApiReadinessResult>();
+  for (const r of results) {
+    if (!latestByAsset.has(r.asset_id) || new Date(r.timestamp) > new Date(latestByAsset.get(r.asset_id)!.timestamp)) {
+      latestByAsset.set(r.asset_id, r);
+    }
+  }
+  const latestResults = Array.from(latestByAsset.values());
+
+  const ready = latestResults.filter((r) => r.readiness_status === "READY");
+  if (ready.length > 0) return { status: "READY", score: Math.min(...ready.map((r) => r.readiness_score)) };
+
+  const cond = latestResults.filter((r) => r.readiness_status === "CONDITIONALLY_READY");
+  if (cond.length > 0) return { status: "CONDITIONALLY_READY", score: Math.min(...cond.map((r) => r.readiness_score)) };
+
+  const notReady = latestResults.filter((r) => r.readiness_status === "NOT_READY");
+  if (notReady.length > 0) return { status: "NOT_READY", score: Math.min(...notReady.map((r) => r.readiness_score)) };
+
+  return { status: "UNKNOWN", score: null };
 }
 
 // ── Mini health sparkline ───────────────────────────────────────────────────
@@ -172,7 +188,7 @@ function Dashboard() {
   const [summary, setSummary] = useState<ApiFleetSummary | null>(null);
   const [assets, setAssets] = useState<ApiAsset[]>([]);
   const [missionReadiness, setMissionReadiness] = useState<
-    Array<{ mission_id: string; status: string }>
+    Array<{ mission_id: string; status: string; score: number | null }>
   >([]);
   const [maintenanceCount, setMaintenanceCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -194,11 +210,11 @@ function Dashboard() {
       if (fleetAssets.status === "fulfilled") setAssets(fleetAssets.value);
       if (recs.status === "fulfilled") setMaintenanceCount(recs.value.length);
 
-      const resolved: Array<{ mission_id: string; status: string }> = [];
+      const resolved: Array<{ mission_id: string; status: string; score: number | null }> = [];
       MISSION_IDS.forEach((id, i) => {
         const r = msnResults[i];
         if (r?.status === "fulfilled") {
-          resolved.push({ mission_id: id, status: readinessStatusForMission(r.value) });
+          resolved.push({ mission_id: id, ...getBestMissionReadiness(r.value) });
         }
       });
       setMissionReadiness(resolved);
@@ -427,6 +443,7 @@ function Dashboard() {
               {MISSION_IDS.map((id) => {
                 const result = missionReadiness.find((m) => m.mission_id === id);
                 const status = result?.status ?? "UNKNOWN";
+                const score = result?.score;
                 const priority = MISSION_PRIORITY[id];
 
                 return (
@@ -439,9 +456,16 @@ function Dashboard() {
                       <p className="text-[13px] font-semibold" style={{ color: "var(--text-primary)" }}>
                         {MISSION_NAMES[id]}
                       </p>
-                      <p className="mt-0.5 font-mono text-[10px]" style={{ color: "var(--text-muted)" }}>
-                        {id}
-                      </p>
+                      <div className="mt-0.5 flex items-center gap-2">
+                        <span className="font-mono text-[10px]" style={{ color: "var(--text-muted)" }}>
+                          {id}
+                        </span>
+                        {score !== undefined && score !== null && (
+                          <span className="text-[10px] font-semibold" style={{ color: "var(--text-primary)" }}>
+                            Score: {Math.round(score * 100)}%
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <div className="text-right">
                       <span className={`badge-sm ${
