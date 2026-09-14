@@ -87,18 +87,27 @@ based on mission impact and equipment health.
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/[your-repo].git
-cd [your-repo]
+https://github.com/sp2816/bob-ai-hackathon-codecrafters.git
+cd bob-ai-hackathon-codecrafters
 
 # 2. Install dependencies
-[your install command here]
+pip install -r src/backend/member1_backend/requirements.txt
+pip install -r src/backend/member2_ml/requirements.txt
+cd src/frontend
+npm install
 
 # 3. Configure environment
+# Note: Core application does not require API keys, but if a .env.example exists:
 cp .env.example .env
-# Edit .env with your values
 
-# 4. Run the project
-[your run command here]
+# 4. Run the backend (in terminal 1)
+cd ../..
+cd src/backend/member1_backend
+uvicorn app.main:app --reload
+
+# 5. Run the frontend (in terminal 2)
+cd ../../../src/frontend
+npm run dev
 ```
 
 ---
