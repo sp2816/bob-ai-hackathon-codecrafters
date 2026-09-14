@@ -11,6 +11,8 @@ from app.routers import (
     missions,
     fleet,
     predictions,
+    notifications,
+    chat,
 )
 
 # Create all DB tables on startup
@@ -50,6 +52,8 @@ app.include_router(maintenance_records.router)
 app.include_router(missions.router)
 app.include_router(fleet.router)
 app.include_router(predictions.router)
+app.include_router(notifications.router)
+app.include_router(chat.router)
 
 
 @app.get("/health", tags=["health"])
