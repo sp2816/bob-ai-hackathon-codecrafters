@@ -1,4 +1,14 @@
-import { Activity, CheckCircle2, Clock3, RefreshCw, ShieldCheck, TriangleAlert, Wrench, Zap } from "lucide-react";
+import {
+  Activity,
+  CheckCircle2,
+  Clock3,
+  RefreshCw,
+  Shield,
+  ShieldCheck,
+  TriangleAlert,
+  Wrench,
+  Zap,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 import AppShell from "./components/layout/AppShell";
@@ -38,58 +48,121 @@ function readinessStatusForMission(results: ApiReadinessResult[]): string {
   return "READY";
 }
 
-// ── Mini health chart (static sparkline — decorative trend only) ───────────
+// ── Mini health sparkline ───────────────────────────────────────────────────
 function MiniHealthChart() {
   return (
-    <svg viewBox="0 0 220 70" className="h-[68px] w-full" preserveAspectRatio="none" aria-label="Fleet health trend">
-      <defs>
-        <linearGradient id="healthFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#69784F" stopOpacity="0.28" />
-          <stop offset="100%" stopColor="#69784F" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M0 53 C18 56, 25 43, 42 46 C58 50, 64 31, 82 36 C97 40, 103 25, 120 31 C137 38, 142 19, 159 25 C177 31, 186 11, 202 17 C209 20, 214 12, 220 9 L220 70 L0 70 Z"
-        fill="url(#healthFill)"
-      />
-      <path
-        d="M0 53 C18 56, 25 43, 42 46 C58 50, 64 31, 82 36 C97 40, 103 25, 120 31 C137 38, 142 19, 159 25 C177 31, 186 11, 202 17 C209 20, 214 12, 220 9"
-        fill="none"
-        stroke="#69784F"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      <circle cx="220" cy="9" r="4" fill="#69784F" />
-    </svg>
+    <div style={{ color: "var(--brand-500)" }}>
+      <svg viewBox="0 0 220 60" className="h-[56px] w-full" preserveAspectRatio="none" aria-label="Fleet health trend">
+        <defs>
+          <linearGradient id="healthFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--brand-500)" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="var(--brand-500)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M0 48 C18 51, 25 38, 42 41 C58 45, 64 26, 82 31 C97 35, 103 20, 120 26 C137 33, 142 14, 159 20 C177 26, 186 6, 202 12 C209 15, 214 7, 220 4 L220 60 L0 60 Z"
+          fill="url(#healthFill)"
+        />
+        <path
+          d="M0 48 C18 51, 25 38, 42 41 C58 45, 64 26, 82 31 C97 35, 103 20, 120 26 C137 33, 142 14, 159 20 C177 26, 186 6, 202 12 C209 15, 214 7, 220 4"
+          fill="none"
+          stroke="var(--brand-500)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+        <circle cx="220" cy="4" r="3.5" fill="var(--brand-500)" />
+        <circle cx="220" cy="4" r="6" fill="var(--brand-500)" fillOpacity="0.2" />
+      </svg>
+    </div>
   );
 }
 
+// ── Readiness Ring ─────────────────────────────────────────────────────────
 function ReadinessRing({ score }: { score: number }) {
-  const radius = 52;
+  const radius = 48;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - score / 100);
+  const color = score >= 70 ? "var(--success-text)" : score >= 40 ? "var(--warning-text)" : "var(--danger-text)";
 
   return (
-    <div className="relative flex h-[126px] w-[126px] items-center justify-center">
-      <svg viewBox="0 0 126 126" className="absolute inset-0 h-full w-full -rotate-90">
-        <circle cx="63" cy="63" r={radius} fill="none" stroke="#E1D6C6" strokeWidth="9" />
+    <div className="relative flex h-[116px] w-[116px] items-center justify-center">
+      <svg viewBox="0 0 116 116" className="absolute inset-0 h-full w-full -rotate-90">
+        <circle cx="58" cy="58" r={radius} fill="none" stroke="var(--border-strong)" strokeWidth="8" />
         <circle
-          cx="63"
-          cy="63"
+          cx="58"
+          cy="58"
           r={radius}
           fill="none"
-          stroke="#69784F"
-          strokeWidth="9"
+          stroke={color}
+          strokeWidth="8"
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
+          style={{ transition: "stroke-dashoffset 0.6s ease" }}
         />
       </svg>
       <div className="relative text-center">
-        <div className="text-[29px] font-light leading-none tracking-[-0.05em] text-[#3B2A20]">{score}%</div>
-        <div className="mt-1 text-[7px] font-semibold uppercase tracking-[0.15em] text-[#9B8977]">Ready</div>
+        <div className="text-[26px] font-bold leading-none tracking-[-0.04em]" style={{ color }}>
+          {score}%
+        </div>
+        <div className="mt-1 text-[8px] font-semibold uppercase tracking-[0.14em]" style={{ color: "var(--text-muted)" }}>
+          Ready
+        </div>
       </div>
     </div>
+  );
+}
+
+// ── KPI Card ───────────────────────────────────────────────────────────────
+function KpiCard({
+  label,
+  value,
+  sublabel,
+  icon: Icon,
+  iconVariant = "brand",
+  valueColor,
+  loading,
+}: {
+  label: string;
+  value: string | number;
+  sublabel?: string;
+  icon: React.ElementType;
+  iconVariant?: "brand" | "success" | "warning" | "danger" | "info";
+  valueColor?: string;
+  loading?: boolean;
+}) {
+  const iconClass = `icon-container-${iconVariant}`;
+  return (
+    <article
+      className="card rounded-xl p-5"
+      style={{ transition: "box-shadow 200ms ease, transform 200ms ease" }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+      }}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="eyebrow">{label}</p>
+          <div
+            className="mt-3 text-[36px] font-bold leading-none tracking-[-0.05em]"
+            style={{ color: valueColor ?? "var(--text-primary)" }}
+          >
+            {loading ? <span style={{ color: "var(--text-muted)" }}>—</span> : value}
+          </div>
+          {sublabel && (
+            <p className="mt-2 text-xs" style={{ color: "var(--text-muted)" }}>
+              {loading ? "Loading…" : sublabel}
+            </p>
+          )}
+        </div>
+        <div className={iconClass}>
+          <Icon className="h-5 w-5" strokeWidth={1.8} />
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -105,6 +178,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
   const [runMsg, setRunMsg] = useState<string | null>(null);
+  const [runMsgType, setRunMsgType] = useState<"success" | "danger">("success");
 
   const fetchAll = async () => {
     setLoading(true);
@@ -124,10 +198,7 @@ function Dashboard() {
       MISSION_IDS.forEach((id, i) => {
         const r = msnResults[i];
         if (r?.status === "fulfilled") {
-          resolved.push({
-            mission_id: id,
-            status: readinessStatusForMission(r.value),
-          });
+          resolved.push({ mission_id: id, status: readinessStatusForMission(r.value) });
         }
       });
       setMissionReadiness(resolved);
@@ -144,38 +215,44 @@ function Dashboard() {
     try {
       await runMlPipeline();
       await runReadinessPipeline();
-      setRunMsg("ML + Readiness pipelines refreshed. Reloading dashboard…");
+      setRunMsg("ML + Readiness pipelines refreshed successfully.");
+      setRunMsgType("success");
       await fetchAll();
     } catch {
       setRunMsg("Pipeline failed. Ensure the backend is running.");
+      setRunMsgType("danger");
     } finally {
       setRunning(false);
     }
   };
 
-  const readyCount = summary?.counts.READY ?? 0;
+  const readyCount    = summary?.counts.READY ?? 0;
   const notReadyCount = summary?.counts.NOT_READY ?? 0;
-  const totalCount = summary?.total ?? 0;
+  const condCount     = summary?.counts.CONDITIONALLY_READY ?? 0;
+  const totalCount    = summary?.total ?? 0;
 
-  // Fleet health as percentage of READY assets
-  const fleetHealthPct = totalCount > 0 ? Math.round((readyCount / totalCount) * 100) : 0;
-
-  // Mission readiness % = missions that are READY out of known missions
-  const readyMissions = missionReadiness.filter((m) => m.status === "READY").length;
+  const fleetHealthPct    = totalCount > 0 ? Math.round((readyCount / totalCount) * 100) : 0;
+  const readyMissions     = missionReadiness.filter((m) => m.status === "READY").length;
   const missionReadinessPct =
     missionReadiness.length > 0 ? Math.round((readyMissions / missionReadiness.length) * 100) : 0;
 
+  const statusBadgeForMission = (status: string) => {
+    if (status === "READY") return "badge-ready";
+    if (status === "NOT_READY") return "badge-not-ready";
+    if (status === "CONDITIONALLY_READY") return "badge-medium";
+    return "badge-neutral";
+  };
+
   return (
     <>
-      <div className="space-y-7">
-        <section className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+      <div className="space-y-6">
+        {/* Page header */}
+        <section className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="eyebrow">Mission Control</p>
-            <h1 className="mt-2 text-[42px] font-semibold leading-none tracking-[-0.055em] text-[#3B2A20] sm:text-[48px]">
-              Dashboard
-            </h1>
-            <p className="mt-3 max-w-xl text-[13px] leading-6 text-[#806B59]">
-              Fleet health, mission readiness, predictive risk, and maintenance intelligence in one operational view.
+            <h1 className="page-title mt-2">Dashboard</h1>
+            <p className="body-text mt-2 max-w-xl">
+              Fleet health, mission readiness, predictive risk, and maintenance intelligence.
             </p>
           </div>
 
@@ -184,179 +261,137 @@ function Dashboard() {
               type="button"
               onClick={handleRunAll}
               disabled={running}
-              className="flex items-center gap-1.5 rounded-full border border-[#C2CEAE] bg-[#DDE5D1] px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#596842] hover:bg-[#CDD9C1] disabled:opacity-50"
+              className="btn-ai-sm"
             >
-              <Zap className="h-3 w-3" />
+              <Zap className="h-3.5 w-3.5" />
               {running ? "Running…" : "Refresh All"}
             </button>
             <button
               type="button"
               onClick={fetchAll}
-              className="flex items-center gap-1.5 rounded-full border border-[#D8CBB9] bg-[#EEE5D7] px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#806B59] hover:bg-[#E5D8C5]"
+              className="btn-secondary-sm"
             >
-              <RefreshCw className="h-3 w-3" />
+              <RefreshCw className="h-3.5 w-3.5" />
               Reload
             </button>
           </div>
         </section>
 
+        {/* Run message banner */}
         {runMsg && (
-          <div className="rounded-xl border border-[#C2CEAE] bg-[#DDE5D1] px-4 py-3 text-[11px] text-[#596842]">
+          <div className={runMsgType === "success" ? "banner-success" : "banner-danger"}>
             {runMsg}
           </div>
         )}
 
-        {/* Top KPI cards */}
-        <section className="grid gap-5 lg:grid-cols-3">
-          {/* Fleet Health */}
-          <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] p-6 shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="eyebrow">Fleet Health</p>
-                <h2 className="mt-4 text-[15px] font-semibold text-[#4A3528]">Overall asset health</h2>
-              </div>
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E0E7D6]">
-                <Activity className="h-4 w-4 text-[#69784F]" strokeWidth={1.7} />
-              </div>
-            </div>
-            <div className="mt-5 flex items-end justify-between gap-4">
-              <div>
-                <div className="text-[44px] font-light leading-none tracking-[-0.06em] text-[#3B2A20]">
-                  {loading ? "—" : `${fleetHealthPct}%`}
-                </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <span className="moss-dot" />
-                  <span className="text-[10px] text-[#69784F]">
-                    {loading ? "Loading…" : `${readyCount} / ${totalCount} assets READY`}
-                  </span>
-                </div>
-              </div>
-              <div className="w-[48%]">
-                <MiniHealthChart />
-              </div>
-            </div>
-          </article>
-
-          {/* Active Alerts */}
-          <article className="rounded-2xl border-2 border-[#C96D52] bg-[#FBF4EE] p-6 shadow-[0_8px_30px_rgba(155,75,50,0.05)]">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A85B45]">Active Alerts</p>
-                <h2 className="mt-4 text-[15px] font-semibold text-[#4A3528]">Fleet attention</h2>
-              </div>
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F0D8CF]">
-                <TriangleAlert className="h-4 w-4 text-[#B95F46]" strokeWidth={1.7} />
-              </div>
-            </div>
-            <div className="mt-5">
-              <div className="text-[44px] font-light leading-none tracking-[-0.06em] text-[#B95F46]">
-                {loading ? "—" : notReadyCount}{" "}
-                <span className="text-[20px] font-normal">(NOT READY)</span>
-              </div>
-              <div className="mt-4 flex items-center gap-2">
-                <span className="terracotta-dot" />
-                <span className="text-[10px] text-[#A85B45]">
-                  {loading ? "Loading…" : `${summary?.counts.CONDITIONALLY_READY ?? 0} conditionally ready`}
-                </span>
-              </div>
-            </div>
-          </article>
-
-          {/* Mission Readiness */}
-          <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] p-6 shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="eyebrow">Mission Readiness</p>
-                <h2 className="mt-4 text-[15px] font-semibold text-[#4A3528]">Fleet assessment</h2>
-              </div>
-              <ShieldCheck className="h-5 w-5 text-[#69784F]" strokeWidth={1.6} />
-            </div>
-            <div className="mt-2 flex items-center justify-between">
-              <div>
-                <div className="text-[44px] font-light leading-none tracking-[-0.06em] text-[#3B2A20]">
-                  {loading ? "—" : `${missionReadinessPct}%`}
-                </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <span className="moss-dot" />
-                  <span className="text-[10px] text-[#69784F]">
-                    {loading ? "Loading…" : `${readyMissions} / ${missionReadiness.length} missions ready`}
-                  </span>
-                </div>
-              </div>
-              {!loading && <ReadinessRing score={missionReadinessPct} />}
-            </div>
-          </article>
+        {/* KPI Cards row */}
+        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <KpiCard
+            label="Total Assets"
+            value={totalCount}
+            sublabel={`${totalCount} assets monitored`}
+            icon={Shield}
+            iconVariant="brand"
+            loading={loading}
+          />
+          <KpiCard
+            label="Ready"
+            value={readyCount}
+            sublabel={`${fleetHealthPct}% fleet health`}
+            icon={CheckCircle2}
+            iconVariant="success"
+            valueColor="var(--success-text)"
+            loading={loading}
+          />
+          <KpiCard
+            label="Conditionally Ready"
+            value={condCount}
+            sublabel="Require attention"
+            icon={Activity}
+            iconVariant="warning"
+            valueColor="var(--warning-text)"
+            loading={loading}
+          />
+          <KpiCard
+            label="Not Ready"
+            value={notReadyCount}
+            sublabel="Immediate action needed"
+            icon={TriangleAlert}
+            iconVariant="danger"
+            valueColor="var(--danger-text)"
+            loading={loading}
+          />
         </section>
 
-        {/* Asset health + Mission schedule */}
-        <section className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-          {/* Asset list from backend */}
-          <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
-            <div className="flex items-center justify-between px-6 py-5">
+        {/* Fleet health + mission readiness */}
+        <section className="grid gap-4 lg:grid-cols-3">
+
+          {/* Fleet health card — wide */}
+          <article className="card rounded-xl lg:col-span-2">
+            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid var(--border-default)" }}>
               <div>
                 <p className="eyebrow">Fleet</p>
-                <h2 className="mt-2 text-[17px] font-semibold text-[#4A3528]">Asset health</h2>
+                <h2 className="card-title mt-1">Asset Health Overview</h2>
               </div>
-              <Activity className="h-5 w-5 text-[#806B59]" strokeWidth={1.5} />
+              <Activity className="h-5 w-5" style={{ color: "var(--text-muted)" }} strokeWidth={1.5} />
             </div>
 
             {loading && (
-              <div className="border-t border-[#E8DED1] px-6 py-6 text-center text-[11px] text-[#9B8977]">
+              <div className="px-5 py-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
                 Loading assets…
               </div>
             )}
 
             <div>
               {assets.map((asset) => {
-                const healthPct =
-                  asset.readiness_score !== null ? Math.round(asset.readiness_score * 100) : 50;
-                const isWarning = asset.current_status === "NOT_READY";
+                const healthPct = asset.readiness_score !== null ? Math.round(asset.readiness_score * 100) : 50;
+                const isReady = asset.current_status === "READY";
+                const isNotReady = asset.current_status === "NOT_READY";
+
+                const fillClass = isReady
+                  ? "progress-fill-success"
+                  : isNotReady
+                  ? "progress-fill-danger"
+                  : "progress-fill-warning";
+
+                const dotClass = isReady
+                  ? "status-dot-ready"
+                  : isNotReady
+                  ? "status-dot-danger"
+                  : "status-dot-warning";
 
                 return (
-                  <div key={asset.asset_id} className="border-t border-[#E8DED1] px-6 py-5">
-                    <div className="flex items-start justify-between gap-5">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`h-2 w-2 rounded-full ${
-                              asset.current_status === "READY"
-                                ? "bg-[#69784F]"
-                                : asset.current_status === "NOT_READY"
-                                  ? "bg-[#B95F46]"
-                                  : "bg-[#A69A89]"
-                            }`}
-                          />
-                          <span className="font-mono text-[11px] font-semibold text-[#4A3528]">
-                            {asset.asset_id}
-                          </span>
-                          <span className="hidden text-[10px] text-[#9B8977] sm:inline">{asset.asset_name}</span>
-                        </div>
-                        <p className="mt-2 text-[10px] text-[#806B59]">{asset.asset_type} · {asset.unit}</p>
+                  <div
+                    key={asset.asset_id}
+                    className="px-5 py-3.5 transition-colors duration-100"
+                    style={{ borderBottom: "1px solid var(--border-subtle)" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--surface-elevated)"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = ""; }}
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <span className={dotClass} />
+                        <span className="font-mono text-[12px] font-semibold" style={{ color: "var(--text-primary)" }}>
+                          {asset.asset_id}
+                        </span>
+                        <span className="hidden text-xs sm:inline" style={{ color: "var(--text-muted)" }}>
+                          {asset.asset_name}
+                        </span>
                       </div>
-
-                      <div className="text-right">
-                        <span className="text-[20px] font-light tracking-[-0.04em] text-[#3B2A20]">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[18px] font-bold leading-none tracking-[-0.04em]" style={{
+                          color: isReady ? "var(--success-text)" : isNotReady ? "var(--danger-text)" : "var(--warning-text)"
+                        }}>
                           {healthPct}%
                         </span>
-                        <p
-                          className={`mt-1 text-[8px] font-semibold uppercase tracking-[0.1em] ${
-                            isWarning ? "text-[#B95F46]" : "text-[#69784F]"
-                          }`}
-                        >
+                        <span className={`badge-sm ${isReady ? "badge-ready" : isNotReady ? "badge-not-ready" : "badge-conditional"}`}
+                          style={{ padding: "2px 8px" }}>
                           {asset.current_status.replace(/_/g, " ")}
-                        </p>
+                        </span>
                       </div>
                     </div>
-
-                    <div className="mt-4 soft-progress">
-                      <div
-                        className={isWarning ? "terracotta-progress" : "moss-progress"}
-                        style={{ width: `${Math.max(healthPct, 3)}%` }}
-                      />
-                    </div>
-                    <div className="mt-2 flex justify-between">
-                      <span className="text-[8px] text-[#A39484]">{asset.operational_hours.toLocaleString()} op. hours</span>
-                      <span className="text-[8px] text-[#A39484]">Readiness index</span>
+                    <div className="progress-track mt-2.5">
+                      <div className={fillClass} style={{ width: `${Math.max(healthPct, 2)}%` }} />
                     </div>
                   </div>
                 );
@@ -364,63 +399,59 @@ function Dashboard() {
             </div>
           </article>
 
-          {/* Mission schedule from backend */}
-          <article className="rounded-2xl border border-[#DED2C0] bg-[#FBF8F2] shadow-[0_8px_30px_rgba(91,70,48,0.04)]">
-            <div className="flex items-center justify-between px-6 py-5">
+          {/* Mission readiness card */}
+          <article className="card rounded-xl">
+            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid var(--border-default)" }}>
               <div>
                 <p className="eyebrow">Schedule</p>
-                <h2 className="mt-2 text-[17px] font-semibold text-[#4A3528]">Mission readiness</h2>
+                <h2 className="card-title mt-1">Mission Readiness</h2>
               </div>
-              <Clock3 className="h-5 w-5 text-[#806B59]" strokeWidth={1.5} />
+              <Clock3 className="h-5 w-5" style={{ color: "var(--text-muted)" }} strokeWidth={1.5} />
             </div>
 
-            {loading && (
-              <div className="border-t border-[#E8DED1] px-6 py-6 text-center text-[11px] text-[#9B8977]">
-                Loading missions…
-              </div>
-            )}
+            {/* Readiness ring */}
+            <div className="flex flex-col items-center px-5 py-5" style={{ borderBottom: "1px solid var(--border-default)" }}>
+              {!loading && <ReadinessRing score={missionReadinessPct} />}
+              {loading && (
+                <div className="flex h-[116px] items-center text-sm" style={{ color: "var(--text-muted)" }}>
+                  Loading…
+                </div>
+              )}
+              <p className="mt-3 text-xs" style={{ color: "var(--text-muted)" }}>
+                {loading ? "" : `${readyMissions} / ${missionReadiness.length} missions ready`}
+              </p>
+            </div>
 
+            {/* Mission list */}
             <div>
               {MISSION_IDS.map((id) => {
                 const result = missionReadiness.find((m) => m.mission_id === id);
                 const status = result?.status ?? "UNKNOWN";
+                const priority = MISSION_PRIORITY[id];
 
                 return (
                   <div
                     key={id}
-                    className="grid grid-cols-[48px_1fr_auto] items-center gap-3 border-t border-[#E8DED1] px-6 py-5"
+                    className="grid grid-cols-[1fr_auto] items-center gap-3 px-5 py-3"
+                    style={{ borderBottom: "1px solid var(--border-subtle)" }}
                   >
-                    <span className="font-mono text-[10px] text-[#9B8977]">{id}</span>
-
                     <div>
-                      <p className="text-[12px] font-semibold text-[#4A3528]">{MISSION_NAMES[id]}</p>
-                      <p className="mt-1 text-[9px] text-[#A39484]">{id}</p>
+                      <p className="text-[13px] font-semibold" style={{ color: "var(--text-primary)" }}>
+                        {MISSION_NAMES[id]}
+                      </p>
+                      <p className="mt-0.5 font-mono text-[10px]" style={{ color: "var(--text-muted)" }}>
+                        {id}
+                      </p>
                     </div>
-
                     <div className="text-right">
-                      <span
-                        className={`rounded-full border px-2 py-1 text-[7px] font-semibold uppercase tracking-[0.1em] ${
-                          MISSION_PRIORITY[id] === "HIGH"
-                            ? "border-[#D8A394] bg-[#F0D8CF] text-[#B95F46]"
-                            : MISSION_PRIORITY[id] === "MEDIUM"
-                              ? "border-[#D8C8A9] bg-[#EEE2CD] text-[#876D47]"
-                              : "border-[#C8D2B7] bg-[#E2E8D9] text-[#69784F]"
-                        }`}
-                      >
-                        {MISSION_PRIORITY[id]}
+                      <span className={`badge-sm ${
+                        priority === "HIGH" ? "badge-high" : priority === "MEDIUM" ? "badge-medium" : "badge-low"
+                      }`} style={{ padding: "2px 8px" }}>
+                        {priority}
                       </span>
-
-                      <p
-                        className={`mt-2 text-[7px] font-semibold uppercase tracking-[0.12em] ${
-                          status === "READY"
-                            ? "text-[#69784F]"
-                            : status === "NOT_READY"
-                              ? "text-[#B95F46]"
-                              : status === "UNKNOWN"
-                                ? "text-[#A69A89]"
-                                : "text-[#927B66]"
-                        }`}
-                      >
+                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.08em]" style={{
+                        color: status === "READY" ? "var(--success-text)" : status === "NOT_READY" ? "var(--danger-text)" : "var(--warning-text)"
+                      }}>
                         {status === "CONDITIONALLY_READY" ? "CONDITIONAL" : status.replace(/_/g, " ")}
                       </p>
                     </div>
@@ -431,34 +462,86 @@ function Dashboard() {
           </article>
         </section>
 
-        {/* Status bar */}
-        <section className="grid overflow-hidden rounded-2xl border border-[#DED2C0] bg-[#EEE5D7] sm:grid-cols-3">
-          <div className="flex items-center gap-3 border-b border-[#DED2C0] px-5 py-4 sm:border-b-0 sm:border-r">
-            <CheckCircle2 className="h-5 w-5 text-[#69784F]" strokeWidth={1.5} />
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#6F5B4A]">Telemetry</p>
-              <p className="mt-1 text-[10px] text-[#978575]">
-                {loading ? "…" : `${totalCount} assets monitored`}
-              </p>
+        {/* Fleet health sparkline + quick stats */}
+        <section className="grid gap-4 lg:grid-cols-3">
+          {/* Fleet health trend */}
+          <article className="card rounded-xl p-5 lg:col-span-2">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="eyebrow">Fleet Health</p>
+                <div className="mt-2 flex items-baseline gap-3">
+                  <span className="text-[40px] font-bold leading-none tracking-[-0.05em]" style={{ color: "var(--text-brand)" }}>
+                    {loading ? "—" : `${fleetHealthPct}%`}
+                  </span>
+                  <span className="text-sm" style={{ color: "var(--text-muted)" }}>
+                    {loading ? "" : `${readyCount} / ${totalCount} READY`}
+                  </span>
+                </div>
+              </div>
+              <div className="icon-container-brand">
+                <Activity className="h-5 w-5" strokeWidth={1.8} />
+              </div>
             </div>
-          </div>
+            <div className="mt-4">
+              <MiniHealthChart />
+            </div>
+            <div className="mt-2 flex items-center gap-1.5">
+              <span className="status-dot-brand" />
+              <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                Fleet health trend (decorative indicator)
+              </span>
+            </div>
+          </article>
 
-          <div className="flex items-center gap-3 border-b border-[#DED2C0] px-5 py-4 sm:border-b-0 sm:border-r">
-            <Wrench className="h-5 w-5 text-[#B95F46]" strokeWidth={1.5} />
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#6F5B4A]">Maintenance</p>
-              <p className="mt-1 text-[10px] text-[#978575]">
-                {maintenanceCount === null ? "…" : `${maintenanceCount} recommendations queued`}
-              </p>
-            </div>
-          </div>
+          {/* Quick stats column */}
+          <div className="space-y-4">
+            <article className="card rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="icon-container-success h-9 w-9">
+                  <ShieldCheck className="h-4.5 w-4.5" strokeWidth={1.8} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em]" style={{ color: "var(--text-muted)" }}>
+                    Telemetry
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                    {loading ? "…" : `${totalCount} assets monitored`}
+                  </p>
+                </div>
+              </div>
+            </article>
 
-          <div className="flex items-center gap-3 px-5 py-4">
-            <ShieldCheck className="h-5 w-5 text-[#69784F]" strokeWidth={1.5} />
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#6F5B4A]">Evidence Layer</p>
-              <p className="mt-1 text-[10px] text-[#978575]">All recommendations traceable</p>
-            </div>
+            <article className="card rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="icon-container-warning h-9 w-9">
+                  <Wrench className="h-4.5 w-4.5" strokeWidth={1.8} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em]" style={{ color: "var(--text-muted)" }}>
+                    Maintenance
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                    {maintenanceCount === null ? "…" : `${maintenanceCount} recommendations`}
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article className="card rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="icon-container-info h-9 w-9">
+                  <ShieldCheck className="h-4.5 w-4.5" strokeWidth={1.8} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em]" style={{ color: "var(--text-muted)" }}>
+                    Evidence Layer
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                    All traceable
+                  </p>
+                </div>
+              </div>
+            </article>
           </div>
         </section>
       </div>
@@ -475,17 +558,12 @@ function App() {
 
   const renderPage = () => {
     switch (currentPage) {
-      case "assets":
-        return <Assets />;
-      case "predictions":
-        return <Predictions />;
-      case "maintenance":
-        return <Maintenance />;
-      case "ibm-bob":
-        return <IBMBob />;
+      case "assets":      return <Assets />;
+      case "predictions": return <Predictions />;
+      case "maintenance": return <Maintenance />;
+      case "ibm-bob":     return <IBMBob />;
       case "dashboard":
-      default:
-        return <Dashboard />;
+      default:            return <Dashboard />;
     }
   };
 
