@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "assetsentinel": {
+      "command": "python",
+      "args": [
+        "-m",
+        "app.mcp_server"
+      ],
+      "env": {
+        "PYTHONPATH": "d:/college/bob-ai-hackathon-codecrafters/src/backend/member1_backend"
+      }
+    }
+  }
+}
