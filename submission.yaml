@@ -12,15 +12,15 @@ team:
   name: "Codecrafters"                             # REQUIRED — e.g., "Orion Squad"
   track: "AI"                            # REQUIRED — one of: AI | DevOps | Sustainability | Open
   lead:
-    name: "Tisha Jaimin Soni"                           # REQUIRED — e.g., "Alice Chen"
-    email: "24dce138@charusat.edu.in"                          # REQUIRED — e.g., "alice.chen@ibm.com"
+    name: "Tisha Soni"                           # REQUIRED — e.g., "Alice Chen"
+    email: "tis007.ts@gmail.com"                          # REQUIRED — e.g., "alice.chen@ibm.com"
   members:
-    - name: "Selin Sandipkumar Parmar"                         # REQUIRED — Team member 1
-      email: "24dce085@charusat.edu.in"
-    - name: "Mukt Kalpeshbhai Patel"                         # Add more members by copying the two lines above
-      email: "24dcs079@charusat.edu.in"
-    - name: "Dhruv M. Sutariya"
-      email: "24dcs128@charusat.edu.in"
+    - name: "Selin Parmar"                         # REQUIRED — Team member 1
+      email: "selin.parmar2006@gmail.com"
+    - name: "Mukt Patel"                         # Add more members by copying the two lines above
+      email: "muktpatel60@gmail.com"
+    - name: "Dhruv Sutariya"
+      email: "dhruvsutariya222@gmail.com"
 
 submission:
   title: "AssetSentinel — Mission Readiness & Predictive Maintenance Copilot"                            # REQUIRED — Project display name, e.g., "SmartOps Dashboard"

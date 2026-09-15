@@ -98,3 +98,4 @@ AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
 AS-9001,Test Asset AS-9001,aircraft,Unit-Test,1000.0,UNKNOWN
 AS-2001,Test Asset AS-2001,aircraft,Unit-Test,1000.0,UNKNOWN
 AS-2002,Critical Asset AS-2002,aircraft,Unit-Test,2500.0,UNKNOWN
+AS-200,Aircraft 200,aircraft,Unit-Alpha,1000.0,UNKNOWN
