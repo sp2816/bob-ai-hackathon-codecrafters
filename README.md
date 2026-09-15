@@ -7,8 +7,8 @@
 |---|---|
 | **Team Name** | Codecrafters |
 | **Track** | AI |
-| **Team Lead** | Tisha Soni — 24dce138@charusat.edu.in |
-| **Members** | Selin Sandipkumar Parmar, Mukt Kalpeshbhai Patel, Dhruv M. Sutariya |
+| **Team Lead** | Tisha Soni — tis007.ts@gmail.com |
+| **Members** | Selin Parmar, Mukt Patel, Dhruv Sutariya |
 
 ---
 
