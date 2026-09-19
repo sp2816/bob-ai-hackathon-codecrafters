@@ -16,6 +16,7 @@ import Assets from "./pages/Assets";
 import Predictions from "./pages/Predictions";
 import Maintenance from "./pages/Maintenance";
 import IBMBob from "./pages/IBMBob";
+import LandingPage from "./pages/LandingPage";
 
 import {
   getFleetReadinessSummary,
@@ -575,10 +576,10 @@ function Dashboard() {
 
 // ── App router ─────────────────────────────────────────────────────────────
 
-type Page = "dashboard" | "assets" | "predictions" | "maintenance" | "ibm-bob";
+type Page = "landing" | "dashboard" | "assets" | "predictions" | "maintenance" | "ibm-bob";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<Page>("dashboard");
+  const [currentPage, setCurrentPage] = useState<Page>(window.location.pathname === "/" ? "landing" : "dashboard");
 
   const renderPage = () => {
     switch (currentPage) {
@@ -591,8 +592,26 @@ function App() {
     }
   };
 
+  if (currentPage === "landing") {
+    return (
+      <LandingPage onEnter={() => {
+        window.history.pushState({}, '', '/dashboard');
+        setCurrentPage("dashboard");
+      }} />
+    );
+  }
+
   return (
-    <AppShell currentPage={currentPage} onNavigate={(p) => setCurrentPage(p as Page)}>
+    <AppShell currentPage={currentPage} onNavigate={(p) => {
+      if (p === 'landing') {
+        window.history.pushState({}, '', '/');
+      } else if (p === 'dashboard') {
+        window.history.pushState({}, '', '/dashboard');
+      } else {
+        window.history.pushState({}, '', '/' + p);
+      }
+      setCurrentPage(p as Page);
+    }}>
       {renderPage()}
     </AppShell>
   );
