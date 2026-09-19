@@ -7,6 +7,7 @@ import {
   Package,
   Shield,
   Wrench,
+  Calculator,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -22,6 +23,7 @@ const navigation = [
   { label: "Predictions",  icon: Activity,        page: "predictions" },
   { label: "Maintenance",  icon: Wrench,          page: "maintenance" },
   { label: "IBM Bob",      icon: Bot,             page: "ibm-bob" },
+  { label: "Cost Settings",icon: Calculator,      page: "cost-assumptions" },
 ];
 
 function Sidebar({ collapsed, onToggle, currentPage, onNavigate }: SidebarProps) {

@@ -20,7 +20,7 @@ Ownership rules:
 
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import Literal, Optional, List, Dict, Any
 
 from pydantic import BaseModel, Field
 
@@ -114,3 +114,15 @@ class MaintenanceRecommendation(BaseModel):
         default="OPEN",
         description="Recommendation status: OPEN | IN_PROGRESS | RESOLVED.",
     )
+
+    # --- New Expansion Fields ---
+    decision: Optional[str] = Field(
+        None,
+        description="Decision outcome: MONITOR | INSPECT_FIRST | REPAIR | REPLACE",
+    )
+    economic_impact: Optional[Dict[str, Any]] = Field(None, description="Nested counterfactual economic model")
+    timeline: Optional[List[Dict[str, Any]]] = Field(
+        None, 
+        description="Dynamically generated chronological timeline steps."
+    )
+

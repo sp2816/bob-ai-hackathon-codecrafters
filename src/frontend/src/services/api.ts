@@ -16,6 +16,8 @@ import type {
   ApiNotification,
   AssetCreateRequest,
   AssetCreateResponse,
+  ApiCostAssumption,
+  ApiTimelineItem,
 } from "../types/api";
 
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "http://127.0.0.1:8000";
@@ -87,6 +89,21 @@ export async function getMaintenanceRecommendations(): Promise<ApiMaintenanceRec
   return data;
 }
 
+export async function getCostAssumptions(): Promise<ApiCostAssumption[]> {
+  const { data } = await http.get<ApiCostAssumption[]>("/cost-assumptions/");
+  return data;
+}
+
+export async function updateCostAssumption(componentType: string, payload: Partial<ApiCostAssumption>): Promise<ApiCostAssumption> {
+  const { data } = await http.put<ApiCostAssumption>(`/cost-assumptions/${componentType}`, payload);
+  return data;
+}
+
+export async function getAssetTimeline(assetId: string): Promise<{ timeline: ApiTimelineItem[] }> {
+  const { data } = await http.get<{ timeline: ApiTimelineItem[] }>(`/maintenance/timeline/${assetId}`);
+  return data;
+}
+
 // ── Pipeline triggers ──────────────────────────────────────────────────────
 
 export async function runMlPipeline(): Promise<{ status: string; stored: Record<string, number> }> {
@@ -113,4 +130,15 @@ export async function getNotifications(): Promise<ApiNotification[]> {
 export async function sendChatMessage(message: string): Promise<{ response: string }> {
   const { data } = await http.post<{ response: string }>("/chat/", { message });
   return data;
+}
+
+// ── Shared Utilities ───────────────────────────────────────────────────────
+
+export function formatCurrency(value: number | undefined | null): string {
+  if (value === undefined || value === null) return "₹0";
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0
+  }).format(value);
 }

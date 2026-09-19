@@ -8,8 +8,8 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getMaintenanceRecommendations, runReadinessPipeline } from "../services/api";
-import type { ApiMaintenanceRecommendation } from "../types/api";
+import { getMaintenanceRecommendations, runReadinessPipeline, getAssetTimeline, formatCurrency } from "../services/api";
+import type { ApiMaintenanceRecommendation, ApiTimelineItem } from "../types/api";
 
 function UrgencyBadge({ urgency }: { urgency: string }) {
   if (urgency === "HIGH") return <span className="badge-high">{urgency}</span>;
@@ -63,6 +63,25 @@ function deduplicateRecs(recs: ApiMaintenanceRecommendation[]): ApiMaintenanceRe
   return Array.from(best.values()).sort((a, b) => a.priority - b.priority);
 }
 
+function TimelineView({ timeline }: { timeline?: ApiTimelineItem[] }) {
+  if (!timeline || !timeline.length) return null;
+
+  return (
+    <div className="mt-4 pt-3" style={{ borderTop: "1px dashed var(--border-default)" }}>
+      <p className="data-label mb-2">Projected Maintenance Timeline</p>
+      <div className="space-y-2">
+        {timeline.map((step, idx) => (
+          <div key={idx} className="flex gap-3 text-[13px]">
+            <div className="w-16 font-mono font-medium" style={{ color: "var(--text-brand)" }}>{step.time}</div>
+            <div className="font-semibold" style={{ color: "var(--text-primary)" }}>{step.action}</div>
+            <div className="flex-1 text-[var(--text-muted)]">{step.reason}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Maintenance() {
   const [recs, setRecs] = useState<ApiMaintenanceRecommendation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,6 +89,7 @@ function Maintenance() {
   const [running, setRunning] = useState(false);
   const [runMsg, setRunMsg] = useState<string | null>(null);
   const [runMsgType, setRunMsgType] = useState<"success" | "danger">("success");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const fetchRecs = () => {
     setLoading(true);
@@ -346,21 +366,95 @@ function Maintenance() {
                     </div>
                   </div>
 
-                  {/* Action box */}
-                  <div
-                    className="mt-3 rounded-lg px-4 py-3"
-                    style={{ backgroundColor: "var(--surface-elevated)", border: "1px solid var(--border-default)" }}
-                  >
-                    <p className="data-label">Recommended Action</p>
-                    <p className="mt-1.5 text-[13px] font-medium leading-5" style={{ color: "var(--text-primary)" }}>
-                      {rec.action}
-                    </p>
-                    {rec.reason && (
-                      <p className="mt-1.5 text-xs leading-5" style={{ color: "var(--text-muted)" }}>
-                        {rec.reason}
-                      </p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <button 
+                      onClick={() => setExpandedId(expandedId === rec.recommendation_id ? null : rec.recommendation_id)}
+                      className="btn-secondary-sm"
+                    >
+                      {expandedId === rec.recommendation_id ? "Collapse Details" : "View Cost Breakdown & Timeline"}
+                    </button>
+                    {(rec.decision || rec.economic_impact) && expandedId !== rec.recommendation_id && (
+                      <div className="text-right">
+                        <p className="text-[10px] uppercase text-[var(--text-muted)] font-bold">Potential Cost Avoided</p>
+                        <p className="font-bold text-[15px]" style={{ color: "var(--success-text)" }}>
+                           {formatCurrency(rec.economic_impact?.potential_cost_avoided)}
+                        </p>
+                      </div>
                     )}
                   </div>
+
+                  {/* Expanded Section */}
+                  {expandedId === rec.recommendation_id && (
+                    <div className="mt-4 pt-4 border-t border-[var(--border-subtle)]">
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {/* Left Column: Action & Timeline */}
+                        <div>
+                          <div
+                            className="rounded-lg px-4 py-3"
+                            style={{ backgroundColor: "var(--surface-elevated)", border: "1px solid var(--border-default)" }}
+                          >
+                            <p className="data-label">Recommended Action</p>
+                            <p className="mt-1 text-[13px] font-bold uppercase" style={{ color: "var(--brand-accent)" }}>
+                              {rec.decision || "INSPECT FIRST"}
+                            </p>
+                            <p className="mt-1.5 text-[13px] font-medium leading-5" style={{ color: "var(--text-primary)" }}>
+                              {rec.action}
+                            </p>
+                            {rec.reason && (
+                              <p className="mt-1.5 text-xs leading-5" style={{ color: "var(--text-muted)" }}>
+                                {rec.reason}
+                              </p>
+                            )}
+                          </div>
+                          <TimelineView timeline={rec.timeline ?? undefined} />
+                        </div>
+
+                        {/* Right Column: Economic Impact */}
+                        {rec.economic_impact && (
+                          <div className="rounded-lg px-4 py-3 bg-[var(--surface-base)] border border-[var(--border-subtle)]">
+                            <p className="data-label mb-3">Economic Impact Breakdown</p>
+                            
+                            <div className="space-y-3">
+                              <div className="flex justify-between items-center pb-2 border-b border-[var(--border-subtle)]">
+                                <span className="text-[12px] text-[var(--text-muted)]">Without AssetSentinel</span>
+                                <span className="font-mono text-[13px]">{formatCurrency(rec.economic_impact.traditional?.total)}</span>
+                              </div>
+                              <div className="flex justify-between items-center pb-2 border-b border-[var(--border-subtle)]">
+                                <span className="text-[12px] text-[var(--text-muted)]">With AssetSentinel</span>
+                                <span className="font-mono text-[13px] font-medium" style={{ color: "var(--text-primary)" }}>
+                                  {formatCurrency(rec.economic_impact.assetsentinel?.total)}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center pt-1">
+                                <span className="text-[12px] font-bold text-[var(--success-text)]">Potential Cost Avoided</span>
+                                <span className="font-mono text-[14px] font-bold" style={{ color: "var(--success-text)" }}>
+                                  {formatCurrency(rec.economic_impact.potential_cost_avoided)}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center pt-1">
+                                <span className="text-[12px] font-bold text-[var(--brand-accent)]">Net Economic Benefit</span>
+                                <span className="font-mono text-[14px] font-bold" style={{ color: "var(--brand-accent)" }}>
+                                  {formatCurrency(rec.economic_impact.net_economic_benefit)}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center pt-1">
+                                <span className="text-[12px] font-bold text-[var(--text-primary)]">Estimated ROI</span>
+                                <span className="font-mono text-[14px] font-bold" style={{ color: "var(--text-primary)" }}>
+                                  {rec.economic_impact.roi_percent?.toFixed(1) || 0}%
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="mt-4 pt-3 border-t border-dashed border-[var(--border-subtle)]">
+                                <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
+                                  Uses <span className="font-bold">{rec.component_id.replace(/_/g, ' ')}</span> cost assumptions configured in Cost Settings. Values shown are estimates.
+                                </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </article>
               );
             })}

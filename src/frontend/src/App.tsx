@@ -8,6 +8,8 @@ import {
   TriangleAlert,
   Wrench,
   Zap,
+  Banknote,
+  TrendingUp,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -16,6 +18,7 @@ import Assets from "./pages/Assets";
 import Predictions from "./pages/Predictions";
 import Maintenance from "./pages/Maintenance";
 import IBMBob from "./pages/IBMBob";
+import CostAssumptions from "./pages/CostAssumptions";
 
 import {
   getFleetReadinessSummary,
@@ -24,6 +27,7 @@ import {
   getMaintenanceRecommendations,
   runMlPipeline,
   runReadinessPipeline,
+  formatCurrency,
 } from "./services/api";
 import type { ApiFleetSummary, ApiAsset, ApiReadinessResult, ApiMaintenanceRecommendation } from "./types/api";
 
@@ -486,6 +490,46 @@ function Dashboard() {
           </article>
         </section>
 
+        {/* Economic KPIs row */}
+        {summary?.economics && (
+          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <KpiCard
+              label="Traditional Ops Cost"
+              value={formatCurrency(summary.economics.fleet_traditional_cost)}
+              sublabel="Monitor, inspect, prevent + expected failure"
+              icon={TrendingUp}
+              iconVariant="danger"
+              loading={loading}
+            />
+            <KpiCard
+              label="AssetSentinel Cost"
+              value={formatCurrency(summary.economics.fleet_assetsentinel_cost)}
+              sublabel="Sensors, planned interventions + residual risk"
+              icon={Wrench}
+              iconVariant="warning"
+              loading={loading}
+            />
+            <KpiCard
+              label="Fleet Net Benefit"
+              value={formatCurrency(summary.economics.fleet_net_economic_benefit)}
+              sublabel={`Cost Avoided: ${formatCurrency(summary.economics.fleet_potential_cost_avoided)} - Deploy: ${formatCurrency(summary.economics.fleet_deployment_cost)}`}
+              icon={Banknote}
+              iconVariant="success"
+              valueColor="var(--success-text)"
+              loading={loading}
+            />
+            <KpiCard
+              label="Fleet ROI"
+              value={`${summary.economics.fleet_roi_percent.toFixed(1)}%`}
+              sublabel="Net Benefit / Deployment Cost"
+              icon={Activity}
+              iconVariant="brand"
+              valueColor="var(--text-brand)"
+              loading={loading}
+            />
+          </section>
+        )}
+
         {/* Fleet health sparkline + quick stats */}
         <section className="grid gap-4 lg:grid-cols-3">
           {/* Fleet health trend */}
@@ -575,7 +619,7 @@ function Dashboard() {
 
 // ── App router ─────────────────────────────────────────────────────────────
 
-type Page = "dashboard" | "assets" | "predictions" | "maintenance" | "ibm-bob";
+type Page = "dashboard" | "assets" | "predictions" | "maintenance" | "ibm-bob" | "cost-assumptions";
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>("dashboard");
@@ -586,6 +630,7 @@ function App() {
       case "predictions": return <Predictions />;
       case "maintenance": return <Maintenance />;
       case "ibm-bob":     return <IBMBob />;
+      case "cost-assumptions": return <CostAssumptions />;
       case "dashboard":
       default:            return <Dashboard />;
     }

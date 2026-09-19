@@ -125,6 +125,8 @@ class RecommendationSummary(BaseModel):
     priority:          int
     urgency:           str  # LOW | MEDIUM | HIGH
     risk:              str
+    decision:          Optional[str] = None
+    economic_impact:   Optional[dict] = None
 
 
 class AssetCreateResponse(BaseModel):

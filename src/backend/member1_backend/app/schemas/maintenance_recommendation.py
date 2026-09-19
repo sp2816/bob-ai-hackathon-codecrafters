@@ -13,6 +13,10 @@ class MaintenanceRecommendationBase(BaseModel):
     mission_impact: str             # LOW | MEDIUM | HIGH
     urgency: str                    # LOW | MEDIUM | HIGH
     status: str = "OPEN"            # OPEN | IN_PROGRESS | RESOLVED
+    decision: Optional[str] = None
+    economic_impact: Optional[dict] = None
+    timeline: Optional[list] = None
+
 
 
 class MaintenanceRecommendationCreate(MaintenanceRecommendationBase):
