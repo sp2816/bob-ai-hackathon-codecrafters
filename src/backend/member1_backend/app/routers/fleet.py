@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.asset import Asset
+from app.models.maintenance_recommendation import MaintenanceRecommendation
 from app.schemas.asset import AssetResponse
 
 router = APIRouter(prefix="/fleet", tags=["fleet"])
@@ -26,7 +27,36 @@ def fleet_readiness_summary(db: Session = Depends(get_db)):
     for asset in assets:
         status = asset.current_status if asset.current_status in summary else "UNKNOWN"
         summary[status] += 1
-    return {"total": len(assets), "counts": summary}
+        
+    # Aggregate economic KPIs from MaintenanceRecommendations
+    recs = db.query(MaintenanceRecommendation).all()
+    
+    fleet_traditional_cost = 0.0
+    fleet_assetsentinel_cost = 0.0
+    fleet_deployment_cost = 0.0
+    
+    for r in recs:
+        if r.economic_impact:
+            fleet_traditional_cost += r.economic_impact.get("traditional", {}).get("total", 0.0)
+            fleet_assetsentinel_cost += r.economic_impact.get("assetsentinel", {}).get("total", 0.0)
+            fleet_deployment_cost += r.economic_impact.get("deployment_cost", 0.0)
+            
+    fleet_potential_cost_avoided = fleet_traditional_cost - fleet_assetsentinel_cost
+    fleet_net_economic_benefit = fleet_potential_cost_avoided - fleet_deployment_cost
+    fleet_roi_percent = (fleet_net_economic_benefit / fleet_deployment_cost * 100) if fleet_deployment_cost > 0 else 0.0
+
+    return {
+        "total": len(assets), 
+        "counts": summary,
+        "economics": {
+            "fleet_traditional_cost": fleet_traditional_cost,
+            "fleet_assetsentinel_cost": fleet_assetsentinel_cost,
+            "fleet_potential_cost_avoided": fleet_potential_cost_avoided,
+            "fleet_deployment_cost": fleet_deployment_cost,
+            "fleet_net_economic_benefit": fleet_net_economic_benefit,
+            "fleet_roi_percent": fleet_roi_percent
+        }
+    }
 
 
 @router.post("/run-ml", tags=["fleet"])

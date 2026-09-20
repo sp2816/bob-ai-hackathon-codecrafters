@@ -56,9 +56,10 @@ from app.models.asset import Asset
 from app.models.anomaly import Anomaly
 from app.models.component import Component
 from app.models.maintenance_record import MaintenanceRecord
-from app.models.maintenance_recommendation import MaintenanceRecommendation
 from app.models.prediction import Prediction
 from app.models.readiness_result import ReadinessResult
+from app.models.cost_assumption import CostAssumption
+from app.models.maintenance_recommendation import MaintenanceRecommendation
 from app.schemas.asset_create import AssetCreateRequest, AssetCreateResponse
 
 logger = logging.getLogger(__name__)
@@ -235,7 +236,19 @@ def _run_single_asset_readiness(db: Session, request: AssetCreateRequest, ml_res
     component_id_map = {
         (request.asset_id, request.component.component_type): request.component.component_id
     }
-    recommendations = ReadinessService.rank_maintenance_actions([evidence], component_id_map)
+    
+    # Load Cost Assumptions
+    cost_assumptions = db.query(CostAssumption).all()
+    cost_map = {}
+    for ca in cost_assumptions:
+        cost_map[ca.component_type] = {
+            "inspection_cost": ca.inspection_cost,
+            "repair_cost": ca.repair_cost,
+            "replacement_cost": ca.replacement_cost,
+            "failure_impact_cost": ca.failure_impact_cost,
+        }
+
+    recommendations = ReadinessService.rank_maintenance_actions([evidence], component_id_map, cost_map)
 
     return readiness, mission_results, recommendations
 
@@ -363,6 +376,8 @@ def _persist_all(
             mission_impact=rec.mission_impact,
             urgency=rec.urgency,
             status=rec.status,
+            decision=rec.decision,
+            economic_impact=rec.economic_impact,
         )
         db.add(new_rec)
         if rec_row is None:
@@ -491,6 +506,8 @@ def _build_response(asset_row, pred_row, anom_row, readiness_result, rec_row) ->
             "priority":          rec_row.priority,
             "urgency":           rec_row.urgency,
             "risk":              rec_row.risk,
+            "decision":          rec_row.decision,
+            "economic_impact":   rec_row.economic_impact,
         } if rec_row else None,
         "pipeline_note": "Single-component inference completed. Fleet-wide pipeline not re-run.",
     }

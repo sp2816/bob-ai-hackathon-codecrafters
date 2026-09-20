@@ -54,6 +54,8 @@ from member3_readiness.config.settings import (
 )
 from member3_readiness.evidence.models import EvidenceObject
 from member3_readiness.maintenance.models import MaintenanceRecommendation, UrgencyLevel
+from member3_readiness.maintenance.decision_engine import evaluate_decision
+from member3_readiness.maintenance.timeline_engine import build_timeline
 
 
 # ---------------------------------------------------------------------------
@@ -175,6 +177,7 @@ def _make_recommendation_id(rank: int, asset_id: str, component: str) -> str:
 def rank_maintenance(
     evidence_list: list[EvidenceObject],
     component_id_map: dict[tuple[str, str], str] | None = None,
+    cost_assumptions_map: dict[str, dict] | None = None,
 ) -> list[MaintenanceRecommendation]:
     """
     Compute a ranked fleet-wide maintenance priority list.
@@ -208,6 +211,7 @@ def rank_maintenance(
         )
 
     cid_map = component_id_map or {}
+    cost_map = cost_assumptions_map or {}
 
     # --- Compute scores for each component ---
     scored: list[tuple[float, EvidenceObject]] = [
@@ -227,6 +231,14 @@ def rank_maintenance(
             f"{evidence.asset_id}-{evidence.component}",  # placeholder if not supplied
         )
 
+        # Run expansion engines
+        comp_type = evidence.component
+        assumptions = cost_map.get(comp_type, {})
+        
+        urgency_level = _get_urgency_level(evidence.maintenance.inspection_status)
+        decision, costs = evaluate_decision(evidence, assumptions, urgency_level)
+        timeline = build_timeline(evidence, decision, urgency_level)
+
         rec = MaintenanceRecommendation(
             recommendation_id=_make_recommendation_id(rank, evidence.asset_id, evidence.component),
             asset_id=evidence.asset_id,
@@ -238,8 +250,11 @@ def rank_maintenance(
             reason=_build_reason(evidence, score),
             risk=evidence.risk_level,
             mission_impact=evidence.mission_impact,
-            urgency=_get_urgency_level(evidence.maintenance.inspection_status),
+            urgency=urgency_level,
             status="OPEN",
+            decision=decision,
+            economic_impact=costs,
+            timeline=timeline,
         )
         recommendations.append(rec)
 

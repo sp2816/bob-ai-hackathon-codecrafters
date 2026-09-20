@@ -14,13 +14,15 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { createAsset, getAssets } from "../services/api";
+import { createAsset, getAssets, getMaintenanceRecommendations } from "../services/api";
 import type {
   ApiAsset,
   AssetCreateRequest,
   AssetCreateResponse,
   SensorCondition,
+  ApiMaintenanceRecommendation,
 } from "../types/api";
+import { formatCurrency } from "../services/api";
 
 // ── Readiness helpers (display-only, no calculations) ─────────────────────
 
@@ -205,6 +207,46 @@ function ResultCard({ result }: { result: AssetCreateResponse }) {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Economic Impact */}
+      {result.recommendation?.economic_impact && (
+        <div style={{ padding: "1rem 1.25rem", borderTop: "1px solid var(--border-subtle)", background: "color-mix(in srgb, var(--brand-accent) 4%, transparent)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+            <p className="data-label" style={{ color: "var(--text-primary)", fontWeight: 700 }}>ECONOMIC IMPACT</p>
+            <span style={{ fontSize: "10px", padding: "2px 6px", borderRadius: "4px", background: "color-mix(in srgb, var(--warning-text) 15%, transparent)", color: "var(--warning-text)", fontWeight: 600 }}>MODELED ESTIMATE</span>
+          </div>
+          
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+            <div style={{ padding: "0.75rem", borderRadius: "0.5rem", border: "1px solid var(--border-subtle)", background: "var(--surface-card)" }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.05em]" style={{ color: "var(--danger-text)" }}>WITHOUT ASSETSENTINEL (Traditional)</p>
+              <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>Monitoring + Inspection + Prev. Maint. + Expected Failure</p>
+              <p className="mt-2 text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                {formatCurrency(result.recommendation.economic_impact.traditional.total)}
+              </p>
+            </div>
+            <div style={{ padding: "0.75rem", borderRadius: "0.5rem", border: "1px solid var(--border-subtle)", background: "var(--surface-card)" }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.05em]" style={{ color: "var(--success-text)" }}>WITH ASSETSENTINEL</p>
+              <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>Existing Sensors + Planned Intervention & Downtime</p>
+              <p className="mt-2 text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                {formatCurrency(result.recommendation.economic_impact.assetsentinel.total)}
+              </p>
+            </div>
+          </div>
+          
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem", borderRadius: "0.5rem", background: "var(--brand-accent)", color: "white" }}>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.05em] opacity-80">POTENTIAL COST AVOIDED</p>
+              <p className="text-xl font-bold">
+                {formatCurrency(result.recommendation.economic_impact.potential_cost_avoided)}
+              </p>
+            </div>
+          </div>
+          
+          <p className="mt-3 text-[10px] text-center" style={{ color: "var(--text-muted)" }}>
+            * Modeled estimate based on synthetic data and configurable demo cost assumptions. Note: AssetSentinel does NOT replace physical sensors.
+          </p>
         </div>
       )}
 
@@ -886,16 +928,21 @@ function AddAssetModal({ onClose, onSuccess }: AddAssetModalProps) {
 
 function Assets() {
   const [assets, setAssets] = useState<ApiAsset[]>([]);
+  const [recommendations, setRecommendations] = useState<ApiMaintenanceRecommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
 
   const fetchAssets = () => {
     setLoading(true);
     setError(null);
-    getAssets()
-      .then(setAssets)
+    Promise.all([getAssets(), getMaintenanceRecommendations()])
+      .then(([assetsData, recsData]) => {
+        setAssets(assetsData);
+        setRecommendations(recsData);
+      })
       .catch(() => setError("Unable to load assets from the backend."))
       .finally(() => setLoading(false));
   };
@@ -1123,21 +1170,23 @@ function Assets() {
                   ? "progress-fill-danger"
                   : "progress-fill-warning";
 
+              const rec = recommendations.find((r) => r.asset_id === asset.asset_id);
               return (
                 <div
                   key={asset.asset_id}
                   className="px-6 py-5 transition-colors duration-100"
-                  style={{ borderBottom: "1px solid var(--border-subtle)" }}
+                  style={{ borderBottom: "1px solid var(--border-subtle)", cursor: "pointer" }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--surface-elevated)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = ""; }}
+                  onClick={() => setSelectedAssetId(asset.asset_id)}
                 >
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     {/* Left: asset info */}
-                    <div className="flex min-w-0 items-start gap-4">
+                    <div className="flex min-w-0 items-start gap-4 flex-1">
                       <div className="mt-0.5">
                         <StatusIcon status={uiStatus} />
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 w-full">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-mono text-[13px] font-bold" style={{ color: "var(--text-primary)" }}>
                             {asset.asset_id}
@@ -1148,7 +1197,7 @@ function Assets() {
                           {asset.asset_name}
                         </p>
 
-                        <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-3">
+                        <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-4 w-full">
                           <div>
                             <p className="data-label">Type</p>
                             <p className="mt-1 text-[13px] font-medium" style={{ color: "var(--text-primary)" }}>
@@ -1168,6 +1217,32 @@ function Assets() {
                             </p>
                           </div>
                         </div>
+                        
+                        {/* Compact Business Impact Summary */}
+                        {rec && (
+                          <div className="mt-4 pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between">
+                            <div className="flex gap-6">
+                              <div>
+                                <p className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Action</p>
+                                <p className="text-[13px] font-bold mt-0.5" style={{ color: "var(--brand-accent)" }}>{rec.decision || "INSPECT"}</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Potential Cost Avoided</p>
+                                <p className="text-[13px] font-bold mt-0.5" style={{ color: (rec.economic_impact?.potential_cost_avoided ?? 0) >= 0 ? "var(--success-text)" : "var(--danger-text)" }}>
+                                  {(rec.economic_impact?.potential_cost_avoided ?? 0) >= 0 ? "+" : ""}{formatCurrency(rec.economic_impact?.potential_cost_avoided ?? 0)}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] uppercase font-bold text-[var(--text-muted)]">Net Economic Benefit</p>
+                                <p className="text-[13px] font-bold mt-0.5" style={{ color: "var(--text-primary)" }}>
+                                  {formatCurrency(rec.economic_impact?.net_economic_benefit)}
+                                </p>
+                              </div>
+                            </div>
+                            <button className="btn-secondary-sm">View Economic Impact</button>
+                          </div>
+                        )}
+
                       </div>
                     </div>
 
@@ -1241,6 +1316,117 @@ function Assets() {
           </div>
         </div>
       </section>
+      {/* Asset Detail Modal */}
+      {selectedAssetId && (() => {
+        const asset = assets.find(a => a.asset_id === selectedAssetId);
+        const rec = recommendations.find(r => r.asset_id === selectedAssetId);
+        if (!asset) return null;
+        return (
+          <div
+            style={{
+              position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center",
+              background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", padding: "1rem",
+            }}
+            onClick={(e) => { if (e.target === e.currentTarget) setSelectedAssetId(null); }}
+          >
+            <div style={{ width: "100%", maxWidth: "48rem", maxHeight: "90vh", overflowY: "auto", borderRadius: "1rem", background: "var(--surface-card)", border: "1px solid var(--border-default)", boxShadow: "0 24px 64px rgba(0,0,0,0.4)" }}>
+              <div style={{ position: "sticky", top: 0, zIndex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1.25rem 1.5rem", borderBottom: "1px solid var(--border-default)", background: "var(--surface-card)" }}>
+                <div>
+                  <h2 className="text-lg font-bold">Asset Detail: {asset.asset_id}</h2>
+                  <p className="text-xs text-[var(--text-muted)]">{asset.asset_name}</p>
+                </div>
+                <button onClick={() => setSelectedAssetId(null)} className="btn-secondary-sm"><X className="h-4 w-4" /></button>
+              </div>
+              <div className="p-6 space-y-6">
+                {/* Economic Impact Section */}
+                <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border-subtle)] pb-2">Economic Impact</h3>
+                
+                {rec?.economic_impact ? (
+                  <div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Left: Traditional */}
+                      <div className="p-4 rounded-xl border border-[var(--danger-border)] bg-[rgba(235,50,35,0.03)] space-y-3">
+                        <p className="text-xs font-bold uppercase text-[var(--danger-text)]">Without AssetSentinel</p>
+                        <div className="flex justify-between items-center text-sm border-b border-dashed border-[var(--danger-border)] pb-1">
+                          <span className="text-[var(--text-secondary)]">Traditional Monitoring</span>
+                          <span className="font-mono">{formatCurrency(rec.economic_impact.traditional?.monitoring_cost)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm border-b border-dashed border-[var(--danger-border)] pb-1">
+                          <span className="text-[var(--text-secondary)]">Inspection</span>
+                          <span className="font-mono">{formatCurrency(rec.economic_impact.traditional?.inspection_cost)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm border-b border-dashed border-[var(--danger-border)] pb-1">
+                          <span className="text-[var(--text-secondary)]">Preventive Maintenance</span>
+                          <span className="font-mono">{formatCurrency(rec.economic_impact.traditional?.preventive_maintenance_cost)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm border-b border-dashed border-[var(--danger-border)] pb-1">
+                          <span className="text-[var(--text-secondary)]">Expected Reactive Failure</span>
+                          <span className="font-mono">{formatCurrency(rec.economic_impact.traditional?.expected_reactive_failure_cost)}</span>
+                        </div>
+                        <div className="flex justify-between items-center pt-2">
+                          <span className="text-sm font-bold text-[var(--danger-text)]">TOTAL</span>
+                          <span className="font-mono font-bold text-[15px] text-[var(--danger-text)]">{formatCurrency(rec.economic_impact.traditional?.total)}</span>
+                        </div>
+                      </div>
+
+                      {/* Right: AssetSentinel */}
+                      <div className="p-4 rounded-xl border border-[var(--success-border)] bg-[rgba(35,136,114,0.03)] space-y-3">
+                        <p className="text-xs font-bold uppercase text-[var(--success-text)]">With AssetSentinel</p>
+                        <div className="flex justify-between items-center text-sm border-b border-dashed border-[var(--success-border)] pb-1">
+                          <span className="text-[var(--text-secondary)]">Existing Sensor/Data</span>
+                          <span className="font-mono">{formatCurrency(rec.economic_impact.assetsentinel?.sensor_data_cost)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm border-b border-dashed border-[var(--success-border)] pb-1">
+                          <span className="text-[var(--text-secondary)]">Planned Intervention</span>
+                          <span className="font-mono">{formatCurrency(rec.economic_impact.assetsentinel?.planned_intervention_cost + (rec.economic_impact.assetsentinel?.planned_inspection_cost || 0))}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm border-b border-dashed border-[var(--success-border)] pb-1">
+                          <span className="text-[var(--text-secondary)]">Planned Downtime</span>
+                          <span className="font-mono">{formatCurrency(rec.economic_impact.assetsentinel?.planned_downtime_cost)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm border-b border-dashed border-[var(--success-border)] pb-1">
+                          <span className="text-[var(--text-secondary)]">Residual Failure Exposure</span>
+                          <span className="font-mono">{formatCurrency(rec.economic_impact.assetsentinel?.residual_failure_cost)}</span>
+                        </div>
+                        <div className="flex justify-between items-center pt-2">
+                          <span className="text-sm font-bold text-[var(--success-text)]">TOTAL</span>
+                          <span className="font-mono font-bold text-[15px] text-[var(--success-text)]">{formatCurrency(rec.economic_impact.assetsentinel?.total)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Highlight Section */}
+                    <div className="mt-6 p-5 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border-default)] flex flex-wrap justify-around items-center gap-4">
+                      <div className="text-center">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">Potential Cost Avoided</p>
+                        <p className="text-xl font-bold font-mono" style={{ color: (rec.economic_impact.potential_cost_avoided ?? 0) >= 0 ? "var(--success-text)" : "var(--danger-text)" }}>
+                          {(rec.economic_impact.potential_cost_avoided ?? 0) >= 0 ? "+" : ""}{formatCurrency(rec.economic_impact.potential_cost_avoided ?? 0)}
+                        </p>
+                      </div>
+                      <div className="w-px h-10 bg-[var(--border-subtle)] hidden sm:block"></div>
+                      <div className="text-center">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1">Net Economic Benefit</p>
+                        <p className="text-xl font-bold font-mono text-[var(--text-primary)]">
+                          {formatCurrency(rec.economic_impact.net_economic_benefit)}
+                        </p>
+                      </div>
+                      <div className="w-px h-10 bg-[var(--border-subtle)] hidden sm:block"></div>
+                      <div className="text-center">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--brand-accent)] mb-1">Estimated ROI</p>
+                        <p className="text-xl font-bold font-mono text-[var(--brand-accent)]">
+                          {rec.economic_impact.roi_percent?.toFixed(1)}%
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-[var(--text-muted)]">No economic impact available. Run Readiness pipeline.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

@@ -36,7 +36,7 @@ interface Conversation {
 const suggestions = [
   "Which assets need attention?",
   "Show today's maintenance priorities",
-  "What is the current fleet readiness?",
+  "What is the potential cost avoided by using AssetSentinel?",
   "Explain the latest warning",
 ];
 
@@ -647,9 +647,17 @@ function IBMBob() {
                         {contextLoading
                           ? "Loading fleet context…"
                           : summary
-                            ? `Fleet: ${readyCount}/${total} READY · ${notReadyCount} NOT READY · ${highRecs} high-urgency maintenance item(s).`
+                            ? `Fleet: ${readyCount}/${total} READY · ${notReadyCount} NOT READY · ${highRecs} high-urgency maintenance item(s). Modeled Cost Avoided: ₹${summary.economics?.fleet_potential_cost_avoided?.toLocaleString(undefined, { maximumFractionDigits: 0 }) || 0}.`
                             : "Backend context unavailable. Refresh context to reconnect."}
                       </p>
+                      
+                      {/* Backend-Authoritative Economics Explanation */}
+                      <div className="mt-3 p-3 rounded border border-[var(--border-strong)]" style={{ backgroundColor: "var(--surface-elevated)" }}>
+                        <p className="text-[11px] font-semibold" style={{ color: "var(--text-brand)" }}>Economic Model Synchronization Active</p>
+                        <p className="text-[11px] mt-1" style={{ color: "var(--text-secondary)" }}>
+                          IBM Bob calculates all ROI, Economic Impact, and Cost Avoidance using the authoritative backend CostEngine. Cost Assumptions configured by operators are passed to the backend, which models each asset individually based on failure probability and decision paths.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

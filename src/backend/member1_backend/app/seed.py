@@ -25,6 +25,36 @@ from app.models import (  # noqa: F401
 Base.metadata.create_all(bind=engine)
 db = SessionLocal()
 
+# ── Cost Assumptions (Synthetic Demo Data) ──────────────────────────────────────
+COST_ASSUMPTIONS = [
+    {
+        "component_type": "bearing",
+        "inspection_cost": 25000.0,
+        "repair_cost": 120000.0,
+        "replacement_cost": 300000.0,
+        "failure_impact_cost": 0.0,  # Now calculated dynamically
+        "emergency_intervention_cost": 500000.0,
+        "emergency_maintenance_cost": 50000.0,
+        "downtime_cost_per_hour": 10000.0,
+        "planned_downtime_hours": 2.5,
+        "emergency_downtime_hours": 25.0,
+        "mission_disruption_cost": 200000.0
+    },
+    {
+        "component_type": "engine",
+        "inspection_cost": 50000.0,
+        "repair_cost": 450000.0,
+        "replacement_cost": 1500000.0,
+        "failure_impact_cost": 0.0,
+        "emergency_intervention_cost": 2500000.0,
+        "emergency_maintenance_cost": 150000.0,
+        "downtime_cost_per_hour": 15000.0,
+        "planned_downtime_hours": 12.0,
+        "emergency_downtime_hours": 72.0,
+        "mission_disruption_cost": 500000.0
+    }
+]
+
 # ── Assets ────────────────────────────────────────────────────────────────────
 ASSETS = [
     {
@@ -297,9 +327,14 @@ def seed():
     from app.models.anomaly import Anomaly
     from app.models.readiness_result import ReadinessResult
     from app.models.maintenance_recommendation import MaintenanceRecommendation
+    from app.models.cost_assumption import CostAssumption
 
-    counts = {k: 0 for k in ["assets", "components", "sensor_data", "maintenance",
+    counts = {k: 0 for k in ["assets", "cost_assumptions", "components", "sensor_data", "maintenance",
                                "missions", "predictions", "anomalies", "readiness", "recommendations"]}
+
+    for row in COST_ASSUMPTIONS:
+        if not db.get(CostAssumption, row["component_type"]):
+            db.add(CostAssumption(**row)); counts["cost_assumptions"] += 1
 
     for row in ASSETS:
         if not db.get(Asset, row["asset_id"]):

@@ -70,6 +70,7 @@ class ReadinessService:
     def rank_maintenance_actions(
         evidence_list: list[EvidenceObject],
         component_id_map: Optional[dict[tuple[str, str], str]] = None,
+        cost_assumptions_map: Optional[dict[str, dict]] = None,
     ) -> list[MaintenanceRecommendation]:
         """
         Generate and rank maintenance recommendations across the fleet.
@@ -82,5 +83,6 @@ class ReadinessService:
         """
         return rank_maintenance(
             evidence_list=evidence_list,
-            component_id_map=component_id_map
+            component_id_map=component_id_map,
+            cost_assumptions_map=cost_assumptions_map,
         )

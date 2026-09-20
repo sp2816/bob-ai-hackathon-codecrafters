@@ -82,6 +82,14 @@ export interface ApiFleetSummary {
     NOT_READY: number;
     UNKNOWN: number;
   };
+  economics?: {
+    fleet_traditional_cost: number;
+    fleet_assetsentinel_cost: number;
+    fleet_potential_cost_avoided: number;
+    fleet_deployment_cost: number;
+    fleet_net_economic_benefit: number;
+    fleet_roi_percent: number;
+  };
 }
 
 // ── Maintenance ────────────────────────────────────────────────────────────
@@ -98,6 +106,56 @@ export interface ApiMaintenanceRecommendation {
   mission_impact: string;
   urgency: string;
   status: MaintenanceRecommendationStatus;
+  decision?: string | null;
+  economic_impact?: {
+    traditional: {
+      monitoring_cost: number;
+      inspection_cost: number;
+      preventive_maintenance_cost: number;
+      expected_reactive_failure_cost: number;
+      total: number;
+    };
+    assetsentinel: {
+      sensor_data_cost: number;
+      planned_inspection_cost: number;
+      planned_intervention_cost: number;
+      planned_downtime_cost: number;
+      residual_failure_cost: number;
+      total: number;
+    };
+    potential_cost_avoided: number;
+    deployment_cost: number;
+    net_economic_benefit: number;
+    roi_percent: number;
+  } | null;
+  timeline?: ApiTimelineItem[] | null;
+}
+
+export interface ApiCostAssumption {
+  component_type: string;
+  inspection_cost: number;
+  repair_cost: number;
+  replacement_cost: number;
+  failure_impact_cost: number;
+  monitoring_cost_traditional: number;
+  inspection_cost_traditional: number;
+  preventive_maintenance_traditional: number;
+  sensor_data_cost_assetsentinel: number;
+  assetsentinel_deployment_cost: number;
+  residual_failure_probability_multiplier: number;
+  emergency_intervention_cost: number;
+  emergency_maintenance_cost: number;
+  downtime_cost_per_hour: number;
+  planned_downtime_hours: number;
+  emergency_downtime_hours: number;
+  mission_disruption_cost: number;
+}
+
+export interface ApiTimelineItem {
+  action: string;
+  urgency: string;
+  time: string;
+  reason: string;
 }
 
 // ── Notifications ──────────────────────────────────────────────────────────
@@ -183,6 +241,8 @@ export interface RecommendationSummary {
   priority: number;
   urgency: string;
   risk: string;
+  decision?: string | null;
+  economic_impact?: Record<string, any> | null;
 }
 
 export interface AssetCreateResponse {

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Float, Integer, Text
+from sqlalchemy import Column, String, Float, Integer, Text, JSON
 from app.database import Base
 
 
@@ -19,3 +19,8 @@ class MaintenanceRecommendation(Base):
     mission_impact = Column(String, nullable=False)          # LOW | MEDIUM | HIGH
     urgency = Column(String, nullable=False)                 # LOW | MEDIUM | HIGH
     status = Column(String, nullable=False, default="OPEN")  # OPEN | IN_PROGRESS | RESOLVED
+
+    # --- New Expansion Fields ---
+    decision = Column(String, nullable=True)                 # MONITOR | INSPECT_FIRST | REPAIR | REPLACE
+    economic_impact = Column(JSON, nullable=True)            # Nested counterfactual economic model
+    timeline = Column(JSON, nullable=True)                   # Dynamically generated chronological timeline steps

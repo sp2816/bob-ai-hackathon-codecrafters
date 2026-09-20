@@ -170,17 +170,40 @@ def get_mission_readiness_tool(db: Session, asset_id: str, mission_id: str) -> s
     return json.dumps(res_dict, indent=2)
 
 def get_fleet_readiness_tool(db: Session) -> str:
-    """Returns fleet summary, ready count, conditional count, and not ready count."""
+    """Returns fleet summary, ready count, conditional count, not ready count, and fleet economic KPIs."""
     total = db.query(Asset).count()
     ready = db.query(Asset).filter(Asset.current_status == "READY").count()
     cond = db.query(Asset).filter(Asset.current_status == "CONDITIONALLY_READY").count()
     not_ready = db.query(Asset).filter(Asset.current_status == "NOT_READY").count()
     
+    recs = db.query(MaintenanceRecommendation).all()
+    fleet_traditional = 0.0
+    fleet_assetsentinel = 0.0
+    fleet_deployment = 0.0
+    
+    for r in recs:
+        if r.economic_impact:
+            fleet_traditional += r.economic_impact.get("traditional", {}).get("total", 0.0)
+            fleet_assetsentinel += r.economic_impact.get("assetsentinel", {}).get("total", 0.0)
+            fleet_deployment += r.economic_impact.get("deployment_cost", 0.0)
+            
+    fleet_potential_cost_avoided = fleet_traditional - fleet_assetsentinel
+    fleet_net_economic_benefit = fleet_potential_cost_avoided - fleet_deployment
+    fleet_roi_percent = (fleet_net_economic_benefit / fleet_deployment * 100) if fleet_deployment > 0 else 0.0
+
     result = {
         "total_assets": total,
         "ready": ready,
         "conditionally_ready": cond,
-        "not_ready": not_ready
+        "not_ready": not_ready,
+        "economics": {
+            "fleet_traditional_cost": fleet_traditional,
+            "fleet_assetsentinel_cost": fleet_assetsentinel,
+            "fleet_potential_cost_avoided": fleet_potential_cost_avoided,
+            "fleet_deployment_cost": fleet_deployment,
+            "fleet_net_economic_benefit": fleet_net_economic_benefit,
+            "fleet_roi_percent": fleet_roi_percent
+        }
     }
     return json.dumps(result, indent=2)
 
@@ -198,7 +221,9 @@ def get_maintenance_priorities_tool(db: Session) -> str:
             "urgency": r.urgency,
             "priority_score": r.priority,
             "reason": r.reason,
-            "timestamp": str(r.timestamp)
+            "decision": r.decision,
+            "economic_impact": r.economic_impact,
+            "timestamp": str(getattr(r, 'timestamp', ''))
         } for r in recs
     ]
     return json.dumps(result, indent=2)
